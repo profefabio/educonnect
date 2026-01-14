@@ -1024,20 +1024,18 @@
         }
 
         // Seleccionar tipo de usuario
-        function selectUserType(type) {
-            document.querySelectorAll('.user-type-btn').forEach(btn => btn.classList.remove('active'));
-            event.target.closest('.user-type-btn').classList.add('active');
-
-            document.querySelectorAll('.auth-form').forEach(form => form.classList.remove('active'));
-            document.getElementById(`${type}Form`).classList.add('active');
-
-            // Reset login mode
-            const forms = ['institution', 'teacher', 'student'];
-            forms.forEach(f => {
-                if (f !== type) {
-                    isLoginMode[f] = false;
-                }
-            });
+        function selectUserType(type, preserveLoginMode = false) {
+            // ... código para cambiar tabs ...
+            
+            // Reset login mode solo si no se está preservando ✅
+            if (!preserveLoginMode) {
+                const forms = ['institution', 'teacher', 'student'];
+                forms.forEach(f => {
+                    if (f !== type) {
+                        isLoginMode[f] = false;
+                    }
+                });
+            }
         }
 
         // Toggle entre registro e inicio de sesión
