@@ -1548,15 +1548,39 @@
         
         // Función para seleccionar rol y cambiar a modo login
         window.selectRoleAndLogin = function(role) {
+            // 1. Remover overlay
             document.querySelector('div[style*="position: fixed"]').remove();
-            selectUserType(role);
             
-            // Verificar si ya está en modo login
-            if (isLoginMode[role]) {
-                return;  // Ya está en modo login, no hacer nada
-            }
+            // 2. PRIMERO: Activar modo login ✅
+            isLoginMode[role] = true;
             
-            toggleMode(role);  // Solo hace toggle si NO está en login
+            // 3. SEGUNDO: Cambiar el tab activo
+            document.querySelectorAll('.user-type-btn').forEach(b => b.classList.remove('active'));
+            // Seleccionar botón correcto (0=institución, 1=teacher, 2=student)
+            const btn = document.querySelectorAll('.user-type-btn')[
+                role === 'institution' ? 0 : role === 'teacher' ? 1 : 2
+            ];
+            btn.classList.add('active');
+            
+            // Mostrar formulario correcto
+            document.querySelectorAll('.auth-form').forEach(form => form.classList.remove('active'));
+            document.getElementById(`${role}Form`).classList.add('active');
+            
+            // 4. TERCERO: Aplicar UI de modo login ✅
+            const form = document.getElementById(`${role}Form`);
+            const title = form.querySelector('.form-title');
+            const subtitle = form.querySelector('.form-subtitle');
+            const submitBtn = form.querySelector('.btn-primary span');
+            const toggleBtn = form.querySelector('.btn-secondary span');
+            
+            title.textContent = 'Iniciar Sesión - ' + (role === 'institution' ? 'Institución' : 
+                                                       role === 'teacher' ? 'Docente' : 'Estudiante');
+            subtitle.textContent = 'Ingrese sus credenciales';
+            submitBtn.textContent = 'Iniciar Sesión';
+            toggleBtn.textContent = 'Registrarse';
+            
+            // 5. Ocultar campos innecesarios
+            // ... código para ocultar campos y remover required ...
         };
     </script>
 </body>
