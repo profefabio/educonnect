@@ -1042,11 +1042,11 @@
         }
 
         // Logout
-        function logout() {
+       function logout() {
             if (confirm('¿Estás seguro de cerrar sesión?')) {
                 appData.currentUser = null;
                 saveData();
-                window.location.href = 'educonnect-auth.html';
+                window.location.href = 'index.html';  // ← Ahora va al index (landing page)
             }
         }
 
