@@ -774,34 +774,44 @@
             const savedData = localStorage.getItem('eduConnectData');
             if (savedData) {
                 const data = JSON.parse(savedData);
-                if (data.currentUser && data.currentUser.type === 'teacher') {
-                    document.getElementById('teacherName').textContent = data.currentUser.name;
-                    const institution = data.institutions.find(i => i.id === data.currentUser.institutionId);
-                    if (institution) {
-                        document.getElementById('institutionName').textContent = institution.name;
-                    }
-                    const initials = data.currentUser.name.split(' ').map(n => n[0]).join('').toUpperCase();
-                    document.getElementById('userAvatar').textContent = initials;
-
-                    // Usar estudiantes reales si existen
-                    if (data.students && data.students.length > 0) {
-                        studentsData = data.students.map(s => {
-                            const inst = data.institutions.find(i => i.id === s.institutionId);
-                            return {
-                                name: s.name,
-                                email: s.email,
-                                phone: s.phone || 'N/A',
-                                graduationYear: s.graduationYear || 'N/A',
-                                career: s.career || 'N/A',
-                                occupation: s.occupation || 'N/A',
-                                availability: s.availability || 'media'
-                            };
-                        });
-                        filteredData = [...studentsData];
-                        renderTable(studentsData);
-                        updateStats();
-                    }
+                
+                // Verificar que hay un usuario logueado y es docente
+                if (!data.currentUser || data.currentUser.type !== 'teacher') {
+                    // Redirigir al login si no es docente
+                    window.location.href = 'educonnect-auth.html';
+                    return;
                 }
+                
+                // Cargar datos del docente
+                document.getElementById('teacherName').textContent = data.currentUser.name;
+                const institution = data.institutions.find(i => i.id === data.currentUser.institutionId);
+                if (institution) {
+                    document.getElementById('institutionName').textContent = institution.name;
+                }
+                const initials = data.currentUser.name.split(' ').map(n => n[0]).join('').toUpperCase();
+                document.getElementById('userAvatar').textContent = initials;
+
+                // Usar estudiantes reales si existen
+                if (data.students && data.students.length > 0) {
+                    studentsData = data.students.map(s => {
+                        const inst = data.institutions.find(i => i.id === s.institutionId);
+                        return {
+                            name: s.name,
+                            email: s.email,
+                            phone: s.phone || 'N/A',
+                            graduationYear: s.graduationYear || 'N/A',
+                            career: s.career || 'N/A',
+                            occupation: s.occupation || 'N/A',
+                            availability: s.availability || 'media'
+                        };
+                    });
+                    filteredData = [...studentsData];
+                    renderTable(studentsData);
+                    updateStats();
+                }
+            } else {
+                // No hay datos guardados, redirigir al login
+                window.location.href = 'educonnect-auth.html';
             }
         }
 
