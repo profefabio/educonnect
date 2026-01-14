@@ -1550,14 +1550,15 @@
         
         // Función para seleccionar rol y cambiar a modo login
         window.selectRoleAndLogin = function(role) {
-            // Remover overlay
             document.querySelector('div[style*="position: fixed"]').remove();
-            
-            // Seleccionar el tipo de usuario
             selectUserType(role);
             
-            // Cambiar a modo login
-            toggleMode(role);
+            // Verificar si ya está en modo login
+            if (isLoginMode[role]) {
+                return;  // Ya está en modo login, no hacer nada
+            }
+            
+            toggleMode(role);  // Solo hace toggle si NO está en login
         };
     </script>
 </body>
