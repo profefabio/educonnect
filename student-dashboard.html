@@ -1,0 +1,1057 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduConnect - Dashboard Egresado</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Crimson+Pro:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #1a1a2e;
+            --secondary: #16213e;
+            --accent: #0f4c75;
+            --light-accent: #3282b8;
+            --success: #00b894;
+            --warning: #fdcb6e;
+            --danger: #d63031;
+            --bg: #f5f7fa;
+            --white: #ffffff;
+            --text: #333;
+            --text-light: #666;
+            --border: #e1e8ed;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Header */
+        .app-header {
+            background: var(--white);
+            padding: 20px 40px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .logo {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: var(--accent);
+            font-family: 'Crimson Pro', serif;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 1.1em;
+        }
+
+        .user-details h3 {
+            font-size: 0.95em;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .user-details p {
+            font-size: 0.85em;
+            color: var(--text-light);
+        }
+
+        .btn {
+            padding: 10px 25px;
+            border: none;
+            border-radius: 10px;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.95em;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #b71c1c;
+            transform: translateY(-2px);
+        }
+
+        /* Main Container */
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* Tabs Navigation */
+        .tabs-nav {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 10px;
+            margin-bottom: 30px;
+            display: flex;
+            gap: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            overflow-x: auto;
+        }
+
+        .tab-btn {
+            padding: 15px 30px;
+            border: none;
+            background: transparent;
+            color: var(--text-light);
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Outfit', sans-serif;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .tab-btn:not(.active):hover {
+            background: var(--bg);
+        }
+
+        /* Tab Content */
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Profile Section */
+        .profile-container {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            margin-bottom: 40px;
+            padding-bottom: 30px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3em;
+            font-weight: 700;
+        }
+
+        .profile-info h2 {
+            font-family: 'Crimson Pro', serif;
+            font-size: 2em;
+            margin-bottom: 10px;
+            color: var(--primary);
+        }
+
+        .profile-info .subtitle {
+            color: var(--text-light);
+            font-size: 1.1em;
+        }
+
+        .profile-form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text);
+            font-size: 0.95em;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 12px 15px;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.95em;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 40px;
+            margin-top: 20px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        /* Blog Section */
+        .blog-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .blog-header h2 {
+            font-family: 'Crimson Pro', serif;
+            font-size: 2em;
+            color: var(--primary);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #00a383;
+            transform: translateY(-2px);
+        }
+
+        .posts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+        }
+
+        .post-card {
+            background: var(--white);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+        }
+
+        .post-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .post-image {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4em;
+        }
+
+        .post-content {
+            padding: 25px;
+        }
+
+        .post-meta {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            font-size: 0.85em;
+            color: var(--text-light);
+        }
+
+        .post-meta span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .post-title {
+            font-size: 1.3em;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: var(--primary);
+        }
+
+        .post-excerpt {
+            color: var(--text-light);
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .post-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-sm {
+            padding: 8px 15px;
+            font-size: 0.85em;
+        }
+
+        .btn-secondary {
+            background: var(--border);
+            color: var(--text);
+        }
+
+        .btn-secondary:hover {
+            background: #d1d8dd;
+        }
+
+        /* Achievements Section */
+        .achievements-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .achievements-header h2 {
+            font-family: 'Crimson Pro', serif;
+            font-size: 2em;
+            color: var(--primary);
+        }
+
+        .achievements-list {
+            display: grid;
+            gap: 20px;
+        }
+
+        .achievement-card {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+            transition: all 0.3s ease;
+        }
+
+        .achievement-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .achievement-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2em;
+            flex-shrink: 0;
+        }
+
+        .achievement-content {
+            flex: 1;
+        }
+
+        .achievement-title {
+            font-size: 1.2em;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--primary);
+        }
+
+        .achievement-description {
+            color: var(--text-light);
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+
+        .achievement-date {
+            font-size: 0.85em;
+            color: var(--text-light);
+        }
+
+        .achievement-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .empty-state {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 60px 40px;
+            text-align: center;
+        }
+
+        .empty-state-icon {
+            font-size: 5em;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .empty-state h3 {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+            color: var(--text);
+        }
+
+        .empty-state p {
+            color: var(--text-light);
+            margin-bottom: 25px;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: slideUp 0.3s ease-out;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .modal-header h3 {
+            font-family: 'Crimson Pro', serif;
+            font-size: 1.8em;
+            color: var(--primary);
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 2em;
+            cursor: pointer;
+            color: var(--text-light);
+            transition: all 0.3s ease;
+        }
+
+        .close-modal:hover {
+            color: var(--danger);
+            transform: rotate(90deg);
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .app-header {
+                flex-direction: column;
+                gap: 20px;
+                padding: 20px;
+            }
+
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .profile-form {
+                grid-template-columns: 1fr;
+            }
+
+            .posts-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .tabs-nav {
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="app-header">
+        <div class="header-left">
+            <div class="logo">🎓 EduConnect</div>
+        </div>
+        <div class="header-right">
+            <div class="user-info">
+                <div class="user-avatar" id="userAvatar">U</div>
+                <div class="user-details">
+                    <h3 id="userName">Usuario</h3>
+                    <p id="userRole">Egresado</p>
+                </div>
+            </div>
+            <button class="btn btn-danger" onclick="logout()">Cerrar Sesión</button>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Tabs Navigation -->
+        <div class="tabs-nav">
+            <button class="tab-btn active" onclick="showTab('profile')">
+                <span>👤</span>
+                <span>Mi Perfil</span>
+            </button>
+            <button class="tab-btn" onclick="showTab('blog')">
+                <span>📰</span>
+                <span>Blog / Noticias</span>
+            </button>
+            <button class="tab-btn" onclick="showTab('achievements')">
+                <span>🏆</span>
+                <span>Mis Logros</span>
+            </button>
+        </div>
+
+        <!-- Profile Tab -->
+        <div id="profile" class="tab-content active">
+            <div class="profile-container">
+                <div class="profile-header">
+                    <div class="profile-avatar" id="profileAvatar">U</div>
+                    <div class="profile-info">
+                        <h2 id="profileName">Completa tu Perfil</h2>
+                        <p class="subtitle" id="profileInstitution">Institución</p>
+                    </div>
+                </div>
+
+                <form id="profileForm" class="profile-form">
+                    <div class="form-group">
+                        <label>Nombre Completo *</label>
+                        <input type="text" id="name" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Email *</label>
+                        <input type="email" id="email" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Teléfono *</label>
+                        <input type="tel" id="phone" required placeholder="300-123-4567">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Año de Graduación *</label>
+                        <input type="number" id="graduationYear" required min="1950" max="2030">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Carrera / Estudio *</label>
+                        <input type="text" id="career" required placeholder="Ej: Ingeniería de Sistemas">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Ocupación Actual *</label>
+                        <input type="text" id="occupation" required placeholder="Ej: Desarrollador Senior">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Disponibilidad para Eventos *</label>
+                        <select id="availability" required>
+                            <option value="">Seleccione...</option>
+                            <option value="alta">Alta - Puedo asistir regularmente</option>
+                            <option value="media">Media - Puedo asistir ocasionalmente</option>
+                            <option value="baja">Baja - Rara vez puedo asistir</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>LinkedIn (Opcional)</label>
+                        <input type="url" id="linkedin" placeholder="https://linkedin.com/in/tu-perfil">
+                    </div>
+
+                    <div class="form-group full-width">
+                        <button type="submit" class="btn btn-primary">Guardar Perfil</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Blog Tab -->
+        <div id="blog" class="tab-content">
+            <div class="blog-header">
+                <h2>Blog / Noticias</h2>
+                <button class="btn btn-success" onclick="openPostModal()">+ Nueva Publicación</button>
+            </div>
+
+            <div class="posts-grid" id="postsGrid">
+                <!-- Posts will be loaded here -->
+            </div>
+
+            <div id="emptyBlog" class="empty-state" style="display: none;">
+                <div class="empty-state-icon">📰</div>
+                <h3>No hay publicaciones aún</h3>
+                <p>Sé el primero en compartir noticias con la comunidad</p>
+                <button class="btn btn-success" onclick="openPostModal()">Crear Primera Publicación</button>
+            </div>
+        </div>
+
+        <!-- Achievements Tab -->
+        <div id="achievements" class="tab-content">
+            <div class="achievements-header">
+                <h2>Mis Logros</h2>
+                <button class="btn btn-success" onclick="openAchievementModal()">+ Agregar Logro</button>
+            </div>
+
+            <div class="achievements-list" id="achievementsList">
+                <!-- Achievements will be loaded here -->
+            </div>
+
+            <div id="emptyAchievements" class="empty-state" style="display: none;">
+                <div class="empty-state-icon">🏆</div>
+                <h3>No has registrado logros aún</h3>
+                <p>Comparte tus éxitos y reconocimientos con la comunidad</p>
+                <button class="btn btn-success" onclick="openAchievementModal()">Agregar Primer Logro</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Post Modal -->
+    <div id="postModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Nueva Publicación</h3>
+                <button class="close-modal" onclick="closePostModal()">×</button>
+            </div>
+            <form id="postForm">
+                <div class="form-group">
+                    <label>Título *</label>
+                    <input type="text" id="postTitle" required>
+                </div>
+                <div class="form-group">
+                    <label>Categoría *</label>
+                    <select id="postCategory" required>
+                        <option value="">Seleccione...</option>
+                        <option value="noticia">Noticia</option>
+                        <option value="evento">Evento</option>
+                        <option value="logro">Logro Personal</option>
+                        <option value="oportunidad">Oportunidad Laboral</option>
+                        <option value="general">General</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Contenido *</label>
+                    <textarea id="postContent" rows="6" required style="resize: vertical;"></textarea>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">Publicar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Achievement Modal -->
+    <div id="achievementModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Nuevo Logro</h3>
+                <button class="close-modal" onclick="closeAchievementModal()">×</button>
+            </div>
+            <form id="achievementForm">
+                <div class="form-group">
+                    <label>Título del Logro *</label>
+                    <input type="text" id="achievementTitle" required placeholder="Ej: Certificación en...">
+                </div>
+                <div class="form-group">
+                    <label>Descripción *</label>
+                    <textarea id="achievementDescription" rows="4" required style="resize: vertical;"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Fecha *</label>
+                    <input type="date" id="achievementDate" required>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">Guardar Logro</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let appData = {
+            institutions: [],
+            teachers: [],
+            students: [],
+            posts: [],
+            achievements: [],
+            currentUser: null
+        };
+
+        let currentStudent = null;
+
+        // Load data
+        function loadData() {
+            const saved = localStorage.getItem('eduConnectData');
+            if (saved) {
+                appData = JSON.parse(saved);
+                
+                // Verificar que hay usuario logueado y es estudiante
+                if (!appData.currentUser || appData.currentUser.type !== 'student') {
+                    window.location.href = 'educonnect-auth.html';
+                    return;
+                }
+                
+                // Cargar datos del estudiante
+                currentStudent = appData.students.find(s => s.id === appData.currentUser.id);
+                if (currentStudent) {
+                    loadProfile();
+                    loadPosts();
+                    loadAchievements();
+                }
+            } else {
+                window.location.href = 'educonnect-auth.html';
+            }
+        }
+
+        // Load profile
+        function loadProfile() {
+            document.getElementById('userName').textContent = currentStudent.name;
+            document.getElementById('profileName').textContent = currentStudent.name;
+            
+            const inst = appData.institutions.find(i => i.id === currentStudent.institutionId);
+            if (inst) {
+                document.getElementById('profileInstitution').textContent = inst.name;
+            }
+            
+            const initials = currentStudent.name.split(' ').map(n => n[0]).join('').toUpperCase();
+            document.getElementById('userAvatar').textContent = initials;
+            document.getElementById('profileAvatar').textContent = initials;
+            
+            // Fill form
+            document.getElementById('name').value = currentStudent.name || '';
+            document.getElementById('email').value = currentStudent.email || '';
+            document.getElementById('phone').value = currentStudent.phone || '';
+            document.getElementById('graduationYear').value = currentStudent.graduationYear || '';
+            document.getElementById('career').value = currentStudent.career || '';
+            document.getElementById('occupation').value = currentStudent.occupation || '';
+            document.getElementById('availability').value = currentStudent.availability || '';
+            document.getElementById('linkedin').value = currentStudent.linkedin || '';
+        }
+
+        // Save profile
+        document.getElementById('profileForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            currentStudent.name = document.getElementById('name').value;
+            currentStudent.email = document.getElementById('email').value;
+            currentStudent.phone = document.getElementById('phone').value;
+            currentStudent.graduationYear = parseInt(document.getElementById('graduationYear').value);
+            currentStudent.career = document.getElementById('career').value;
+            currentStudent.occupation = document.getElementById('occupation').value;
+            currentStudent.availability = document.getElementById('availability').value;
+            currentStudent.linkedin = document.getElementById('linkedin').value;
+            
+            // Update in appData
+            const index = appData.students.findIndex(s => s.id === currentStudent.id);
+            if (index !== -1) {
+                appData.students[index] = currentStudent;
+            }
+            
+            // Update currentUser
+            appData.currentUser = { ...currentStudent, type: 'student' };
+            
+            saveData();
+            loadProfile();
+            alert('✅ Perfil actualizado exitosamente');
+        });
+
+        // Load posts
+        function loadPosts() {
+            const postsGrid = document.getElementById('postsGrid');
+            const emptyBlog = document.getElementById('emptyBlog');
+            
+            if (!appData.posts) appData.posts = [];
+            
+            if (appData.posts.length === 0) {
+                postsGrid.innerHTML = '';
+                emptyBlog.style.display = 'block';
+                return;
+            }
+            
+            emptyBlog.style.display = 'none';
+            postsGrid.innerHTML = appData.posts.map(post => `
+                <div class="post-card">
+                    <div class="post-image">📰</div>
+                    <div class="post-content">
+                        <div class="post-meta">
+                            <span>👤 ${post.authorName}</span>
+                            <span>📅 ${new Date(post.createdAt).toLocaleDateString()}</span>
+                        </div>
+                        <div class="post-title">${post.title}</div>
+                        <div class="post-excerpt">${post.content.substring(0, 150)}${post.content.length > 150 ? '...' : ''}</div>
+                        <div class="post-actions">
+                            <span style="background: #e3f2fd; color: #1976d2; padding: 5px 12px; border-radius: 6px; font-size: 0.85em; font-weight: 600;">
+                                ${post.category}
+                            </span>
+                            ${post.authorId === currentStudent.id ? `
+                                <button class="btn btn-secondary btn-sm" onclick="deletePost(${post.id})">Eliminar</button>
+                            ` : ''}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Open post modal
+        function openPostModal() {
+            document.getElementById('postModal').classList.add('active');
+            document.getElementById('postForm').reset();
+        }
+
+        // Close post modal
+        function closePostModal() {
+            document.getElementById('postModal').classList.remove('active');
+        }
+
+        // Create post
+        document.getElementById('postForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const post = {
+                id: Date.now(),
+                authorId: currentStudent.id,
+                authorName: currentStudent.name,
+                authorType: 'student',
+                title: document.getElementById('postTitle').value,
+                category: document.getElementById('postCategory').value,
+                content: document.getElementById('postContent').value,
+                createdAt: new Date().toISOString()
+            };
+            
+            if (!appData.posts) appData.posts = [];
+            appData.posts.unshift(post);
+            
+            saveData();
+            loadPosts();
+            closePostModal();
+            alert('✅ Publicación creada exitosamente');
+        });
+
+        // Delete post
+        function deletePost(postId) {
+            if (confirm('¿Estás seguro de eliminar esta publicación?')) {
+                appData.posts = appData.posts.filter(p => p.id !== postId);
+                saveData();
+                loadPosts();
+            }
+        }
+
+        // Load achievements
+        function loadAchievements() {
+            const achievementsList = document.getElementById('achievementsList');
+            const emptyAchievements = document.getElementById('emptyAchievements');
+            
+            if (!appData.achievements) appData.achievements = [];
+            
+            const myAchievements = appData.achievements.filter(a => a.studentId === currentStudent.id);
+            
+            if (myAchievements.length === 0) {
+                achievementsList.innerHTML = '';
+                emptyAchievements.style.display = 'block';
+                return;
+            }
+            
+            emptyAchievements.style.display = 'none';
+            achievementsList.innerHTML = myAchievements.map(achievement => `
+                <div class="achievement-card">
+                    <div class="achievement-icon">🏆</div>
+                    <div class="achievement-content">
+                        <div class="achievement-title">${achievement.title}</div>
+                        <div class="achievement-description">${achievement.description}</div>
+                        <div class="achievement-date">📅 ${new Date(achievement.date).toLocaleDateString()}</div>
+                    </div>
+                    <div class="achievement-actions">
+                        <button class="btn btn-danger btn-sm" onclick="deleteAchievement(${achievement.id})">Eliminar</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Open achievement modal
+        function openAchievementModal() {
+            document.getElementById('achievementModal').classList.add('active');
+            document.getElementById('achievementForm').reset();
+        }
+
+        // Close achievement modal
+        function closeAchievementModal() {
+            document.getElementById('achievementModal').classList.remove('active');
+        }
+
+        // Create achievement
+        document.getElementById('achievementForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const achievement = {
+                id: Date.now(),
+                studentId: currentStudent.id,
+                title: document.getElementById('achievementTitle').value,
+                description: document.getElementById('achievementDescription').value,
+                date: document.getElementById('achievementDate').value,
+                createdAt: new Date().toISOString()
+            };
+            
+            if (!appData.achievements) appData.achievements = [];
+            appData.achievements.unshift(achievement);
+            
+            saveData();
+            loadAchievements();
+            closeAchievementModal();
+            alert('✅ Logro agregado exitosamente');
+        });
+
+        // Delete achievement
+        function deleteAchievement(achievementId) {
+            if (confirm('¿Estás seguro de eliminar este logro?')) {
+                appData.achievements = appData.achievements.filter(a => a.id !== achievementId);
+                saveData();
+                loadAchievements();
+            }
+        }
+
+        // Save data
+        function saveData() {
+            localStorage.setItem('eduConnectData', JSON.stringify(appData));
+        }
+
+        // Show tab
+        function showTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Remove active from all buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(tabName).classList.add('active');
+            
+            // Add active to clicked button
+            event.target.closest('.tab-btn').classList.add('active');
+        }
+
+        // Logout
+        function logout() {
+            if (confirm('¿Estás seguro de cerrar sesión?')) {
+                appData.currentUser = null;
+                saveData();
+                window.location.href = 'educonnect-auth.html';
+            }
+        }
+
+        // Initialize
+        loadData();
+    </script>
+</body>
+</html>
