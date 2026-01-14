@@ -1055,21 +1055,30 @@
                 submitBtn.textContent = 'Iniciar Sesión';
                 toggleBtn.textContent = 'Registrarse';
 
-                // Ocultar campos innecesarios en login
+                // Ocultar campos innecesarios en login y remover required
                 if (type === 'institution') {
                     ['neighborhood', 'municipality', 'department', 'country', 'name'].forEach(field => {
                         const input = document.getElementById(`inst_${field}`);
-                        if (input) input.closest('.form-group').style.display = 'none';
+                        if (input) {
+                            input.closest('.form-group').style.display = 'none';
+                            input.removeAttribute('required');
+                        }
                     });
                 } else {
                     const prefix = type === 'teacher' ? 'teacher' : 'student';
                     ['name', 'country', 'department', 'municipality', 'neighborhood', 'institution'].forEach(field => {
                         const input = document.getElementById(`${prefix}_${field}`);
-                        if (input) input.closest('.form-group').style.display = 'none';
+                        if (input) {
+                            input.closest('.form-group').style.display = 'none';
+                            input.removeAttribute('required');
+                        }
                     });
                     if (type === 'student') {
                         const yearInput = document.getElementById('student_year');
-                        if (yearInput) yearInput.closest('.form-group').style.display = 'none';
+                        if (yearInput) {
+                            yearInput.closest('.form-group').style.display = 'none';
+                            yearInput.removeAttribute('required');
+                        }
                     }
                 }
             } else {
@@ -1080,10 +1089,32 @@
                 submitBtn.textContent = `Registrar ${type === 'institution' ? 'Institución' : type === 'teacher' ? 'Docente' : 'Estudiante'}`;
                 toggleBtn.textContent = 'Iniciar Sesión';
 
-                // Mostrar todos los campos
-                form.querySelectorAll('.form-group').forEach(group => {
-                    group.style.display = 'block';
-                });
+                // Mostrar todos los campos y restaurar required
+                if (type === 'institution') {
+                    ['neighborhood', 'municipality', 'department', 'country', 'name'].forEach(field => {
+                        const input = document.getElementById(`inst_${field}`);
+                        if (input) {
+                            input.closest('.form-group').style.display = 'block';
+                            input.setAttribute('required', 'required');
+                        }
+                    });
+                } else {
+                    const prefix = type === 'teacher' ? 'teacher' : 'student';
+                    ['name', 'country', 'department', 'municipality', 'neighborhood', 'institution'].forEach(field => {
+                        const input = document.getElementById(`${prefix}_${field}`);
+                        if (input) {
+                            input.closest('.form-group').style.display = 'block';
+                            input.setAttribute('required', 'required');
+                        }
+                    });
+                    // El año de graduación no es requerido en estudiantes
+                    if (type === 'student') {
+                        const yearInput = document.getElementById('student_year');
+                        if (yearInput) {
+                            yearInput.closest('.form-group').style.display = 'block';
+                        }
+                    }
+                }
             }
         }
 
