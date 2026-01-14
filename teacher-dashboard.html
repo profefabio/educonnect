@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduConnect - Dashboard Docente</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Crimson+Pro:wght@400;600&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #1a1a2e;
+            --secondary: #16213e;
+            --accent: #0f4c75;
+            --light-accent: #3282b8;
+            --text: #333;
+            --text-light: #666;
+            --bg: #f5f7fa;
+            --white: #ffffff;
+            --success: #00b894;
+            --warning: #fdcb6e;
+            --danger: #d63031;
+            --border: #e1e8ed;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        /* Header */
+        .app-header {
+            background: var(--white);
+            padding: 20px 40px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo {
+            font-size: 2.5em;
+        }
+
+        .logo-text h2 {
+            font-family: 'Crimson Pro', serif;
+            font-size: 1.5em;
+            color: var(--primary);
+        }
+
+        .logo-text p {
+            font-size: 0.85em;
+            color: var(--text-light);
+        }
+
+        .user-section {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .user-info {
+            text-align: right;
+        }
+
+        .user-info h3 {
+            font-size: 0.95em;
+            color: var(--text);
+            margin-bottom: 3px;
+        }
+
+        .user-info p {
+            font-size: 0.85em;
+            color: var(--text-light);
+        }
+
+        .user-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--light-accent) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-weight: 600;
+            font-size: 1.3em;
+        }
+
+        .btn-logout {
+            padding: 10px 20px;
+            background: transparent;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            cursor: pointer;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.9em;
+            font-weight: 600;
+            color: var(--text);
+            transition: all 0.3s ease;
+        }
+
+        .btn-logout:hover {
+            border-color: var(--danger);
+            color: var(--danger);
+            transform: translateY(-2px);
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 40px;
+        }
+
+        /* Welcome Card */
+        .welcome-card {
+            background: linear-gradient(135deg, var(--accent) 0%, var(--light-accent) 100%);
+            color: var(--white);
+            padding: 50px;
+            border-radius: 20px;
+            margin-bottom: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .welcome-card::before {
+            content: '👨‍🏫';
+            position: absolute;
+            font-size: 12em;
+            opacity: 0.1;
+            top: 50%;
+            right: 50px;
+            transform: translateY(-50%);
+        }
+
+        .welcome-card h1 {
+            font-family: 'Crimson Pro', serif;
+            font-size: 2.5em;
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .welcome-card p {
+            font-size: 1.2em;
+            opacity: 0.95;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: var(--white);
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+
+        .stat-icon {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+        }
+
+        .stat-value {
+            font-size: 2.5em;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.95em;
+            color: var(--text-light);
+        }
+
+        /* Main Content Card */
+        .content-card {
+            background: var(--white);
+            border-radius: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            overflow: hidden;
+        }
+
+        .content-header {
+            padding: 30px;
+            border-bottom: 2px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .content-title {
+            font-family: 'Crimson Pro', serif;
+            font-size: 2em;
+            color: var(--primary);
+        }
+
+        .export-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-size: 0.95em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Outfit', sans-serif;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent) 0%, var(--light-accent) 100%);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(15, 76, 117, 0.3);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: var(--white);
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 184, 148, 0.3);
+        }
+
+        /* Filters Section */
+        .filters-section {
+            padding: 30px;
+            background: var(--bg);
+            border-bottom: 2px solid var(--border);
+        }
+
+        .filters-title {
+            font-size: 1.2em;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .filter-group label {
+            font-size: 0.9em;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 8px;
+        }
+
+        .filter-group input,
+        .filter-group select {
+            padding: 12px;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.95em;
+            transition: all 0.3s ease;
+        }
+
+        .filter-group input:focus,
+        .filter-group select:focus {
+            outline: none;
+            border-color: var(--light-accent);
+            box-shadow: 0 0 0 3px rgba(50, 130, 184, 0.1);
+        }
+
+        .filter-actions {
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+        }
+
+        .btn-filter {
+            background: var(--light-accent);
+            color: var(--white);
+        }
+
+        .btn-reset {
+            background: var(--text-light);
+            color: var(--white);
+        }
+
+        /* Table Section */
+        .table-container {
+            padding: 30px;
+            overflow-x: auto;
+        }
+
+        .students-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .students-table thead {
+            background: var(--bg);
+        }
+
+        .students-table th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--text);
+            font-size: 0.9em;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .students-table td {
+            padding: 15px;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.95em;
+        }
+
+        .students-table tbody tr {
+            transition: all 0.3s ease;
+        }
+
+        .students-table tbody tr:hover {
+            background: rgba(50, 130, 184, 0.05);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+
+        .badge-high {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .badge-medium {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .badge-low {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            color: var(--text-light);
+        }
+
+        .empty-state-icon {
+            font-size: 5em;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .empty-state p {
+            font-size: 1.1em;
+        }
+
+        /* Loading Spinner */
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .spinner {
+            border: 4px solid var(--border);
+            border-top: 4px solid var(--light-accent);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 968px) {
+            .container {
+                padding: 20px;
+            }
+
+            .app-header {
+                padding: 15px 20px;
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .user-section {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .welcome-card {
+                padding: 30px 20px;
+            }
+
+            .welcome-card h1 {
+                font-size: 1.8em;
+            }
+
+            .content-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .export-buttons {
+                width: 100%;
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .filters-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .table-container {
+                padding: 15px;
+            }
+
+            .students-table {
+                font-size: 0.85em;
+            }
+
+            .students-table th,
+            .students-table td {
+                padding: 10px 8px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .logo-section {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .user-info {
+                text-align: left;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="app-header">
+        <div class="logo-section">
+            <div class="logo">🎓</div>
+            <div class="logo-text">
+                <h2>EduConnect</h2>
+                <p>Dashboard Docente</p>
+            </div>
+        </div>
+
+        <div class="user-section">
+            <div class="user-info">
+                <h3 id="teacherName">Profesor Juan Pérez</h3>
+                <p id="institutionName">Instituto Educativo Nacional</p>
+            </div>
+            <div class="user-avatar" id="userAvatar">JP</div>
+            <button class="btn-logout" onclick="logout()">Cerrar Sesión</button>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Welcome Card -->
+        <div class="welcome-card">
+            <h1>¡Bienvenido de nuevo!</h1>
+            <p>Gestiona la información de tus estudiantes y genera reportes personalizados</p>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">👥</div>
+                <div class="stat-value" id="totalStudents">0</div>
+                <div class="stat-label">Total Estudiantes</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">✅</div>
+                <div class="stat-value" id="highAvailability">0</div>
+                <div class="stat-label">Alta Disponibilidad</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">⚠️</div>
+                <div class="stat-value" id="mediumAvailability">0</div>
+                <div class="stat-label">Media Disponibilidad</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">🎓</div>
+                <div class="stat-value" id="currentYear">2026</div>
+                <div class="stat-label">Año Actual</div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="content-card">
+            <!-- Header -->
+            <div class="content-header">
+                <h2 class="content-title">Listado de Estudiantes</h2>
+                <div class="export-buttons">
+                    <button class="btn btn-success" onclick="exportToExcel()">
+                        <span>📊</span>
+                        <span>Exportar a Excel</span>
+                    </button>
+                    <button class="btn btn-primary" onclick="exportToPDF()">
+                        <span>📄</span>
+                        <span>Exportar a PDF</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Filters -->
+            <div class="filters-section">
+                <div class="filters-title">
+                    <span>🔍</span>
+                    <span>Filtros de Búsqueda</span>
+                </div>
+                <div class="filters-grid">
+                    <div class="filter-group">
+                        <label>Buscar por Nombre</label>
+                        <input type="text" id="filterName" placeholder="Nombre del estudiante...">
+                    </div>
+
+                    <div class="filter-group">
+                        <label>Año de Graduación</label>
+                        <input type="number" id="filterYear" placeholder="Ej: 2020" min="1950" max="2030">
+                    </div>
+
+                    <div class="filter-group">
+                        <label>Email</label>
+                        <input type="email" id="filterEmail" placeholder="correo@ejemplo.com">
+                    </div>
+
+                    <div class="filter-group">
+                        <label>Disponibilidad</label>
+                        <select id="filterAvailability">
+                            <option value="">Todas</option>
+                            <option value="alta">Alta</option>
+                            <option value="media">Media</option>
+                            <option value="baja">Baja</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label>Carrera</label>
+                        <input type="text" id="filterCareer" placeholder="Carrera o especialidad...">
+                    </div>
+
+                    <div class="filter-actions">
+                        <button class="btn btn-filter" onclick="applyFilters()">
+                            <span>🔍 Filtrar</span>
+                        </button>
+                        <button class="btn btn-reset" onclick="resetFilters()">
+                            <span>🔄 Limpiar</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Table -->
+            <div class="table-container">
+                <div class="loading" id="loading">
+                    <div class="spinner"></div>
+                    <p style="margin-top: 20px; color: var(--text-light);">Cargando datos...</p>
+                </div>
+
+                <table class="students-table" id="studentsTable">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Email</th>
+                            <th>Teléfono</th>
+                            <th>Año Graduación</th>
+                            <th>Carrera</th>
+                            <th>Ocupación Actual</th>
+                            <th>Disponibilidad</th>
+                        </tr>
+                    </thead>
+                    <tbody id="studentsTableBody">
+                        <!-- Data will be inserted here -->
+                    </tbody>
+                </table>
+
+                <div class="empty-state" id="emptyState" style="display: none;">
+                    <div class="empty-state-icon">📭</div>
+                    <p>No se encontraron estudiantes con los filtros aplicados</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Datos de demostración
+        let studentsData = [
+            {
+                name: "María González García",
+                email: "maria.gonzalez@email.com",
+                phone: "300-123-4567",
+                graduationYear: 2020,
+                career: "Ingeniería de Sistemas",
+                occupation: "Desarrolladora Senior",
+                availability: "alta"
+            },
+            {
+                name: "Carlos Rodríguez López",
+                email: "carlos.rodriguez@email.com",
+                phone: "301-234-5678",
+                graduationYear: 2019,
+                career: "Administración de Empresas",
+                occupation: "Gerente de Ventas",
+                availability: "media"
+            },
+            {
+                name: "Ana Martínez Pérez",
+                email: "ana.martinez@email.com",
+                phone: "302-345-6789",
+                graduationYear: 2021,
+                career: "Diseño Gráfico",
+                occupation: "Freelancer",
+                availability: "alta"
+            },
+            {
+                name: "Luis Fernando Silva",
+                email: "luis.silva@email.com",
+                phone: "303-456-7890",
+                graduationYear: 2018,
+                career: "Contaduría Pública",
+                occupation: "Contador Senior",
+                availability: "baja"
+            },
+            {
+                name: "Patricia Ramírez Torres",
+                email: "patricia.ramirez@email.com",
+                phone: "304-567-8901",
+                graduationYear: 2022,
+                career: "Marketing Digital",
+                occupation: "Social Media Manager",
+                availability: "alta"
+            },
+            {
+                name: "Jorge Alberto Díaz",
+                email: "jorge.diaz@email.com",
+                phone: "305-678-9012",
+                graduationYear: 2020,
+                career: "Ingeniería Industrial",
+                occupation: "Ingeniero de Procesos",
+                availability: "media"
+            },
+            {
+                name: "Sandra Milena Castro",
+                email: "sandra.castro@email.com",
+                phone: "306-789-0123",
+                graduationYear: 2019,
+                career: "Psicología",
+                occupation: "Psicóloga Clínica",
+                availability: "alta"
+            },
+            {
+                name: "Andrés Felipe Morales",
+                email: "andres.morales@email.com",
+                phone: "307-890-1234",
+                graduationYear: 2021,
+                career: "Arquitectura",
+                occupation: "Arquitecto Junior",
+                availability: "media"
+            },
+            {
+                name: "Diana Carolina Suárez",
+                email: "diana.suarez@email.com",
+                phone: "308-901-2345",
+                graduationYear: 2020,
+                career: "Derecho",
+                occupation: "Abogada",
+                availability: "baja"
+            },
+            {
+                name: "Miguel Ángel Vargas",
+                email: "miguel.vargas@email.com",
+                phone: "309-012-3456",
+                graduationYear: 2022,
+                career: "Medicina",
+                occupation: "Médico General",
+                availability: "alta"
+            }
+        ];
+
+        let filteredData = [...studentsData];
+
+        // Inicializar
+        function init() {
+            loadUserData();
+            updateStats();
+            renderTable(studentsData);
+        }
+
+        // Cargar datos del usuario
+        function loadUserData() {
+            const savedData = localStorage.getItem('eduConnectData');
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                if (data.currentUser && data.currentUser.type === 'teacher') {
+                    document.getElementById('teacherName').textContent = data.currentUser.name;
+                    const institution = data.institutions.find(i => i.id === data.currentUser.institutionId);
+                    if (institution) {
+                        document.getElementById('institutionName').textContent = institution.name;
+                    }
+                    const initials = data.currentUser.name.split(' ').map(n => n[0]).join('').toUpperCase();
+                    document.getElementById('userAvatar').textContent = initials;
+
+                    // Usar estudiantes reales si existen
+                    if (data.students && data.students.length > 0) {
+                        studentsData = data.students.map(s => {
+                            const inst = data.institutions.find(i => i.id === s.institutionId);
+                            return {
+                                name: s.name,
+                                email: s.email,
+                                phone: s.phone || 'N/A',
+                                graduationYear: s.graduationYear || 'N/A',
+                                career: s.career || 'N/A',
+                                occupation: s.occupation || 'N/A',
+                                availability: s.availability || 'media'
+                            };
+                        });
+                        filteredData = [...studentsData];
+                        renderTable(studentsData);
+                        updateStats();
+                    }
+                }
+            }
+        }
+
+        // Actualizar estadísticas
+        function updateStats() {
+            const total = studentsData.length;
+            const high = studentsData.filter(s => s.availability === 'alta').length;
+            const medium = studentsData.filter(s => s.availability === 'media').length;
+
+            document.getElementById('totalStudents').textContent = total;
+            document.getElementById('highAvailability').textContent = high;
+            document.getElementById('mediumAvailability').textContent = medium;
+            document.getElementById('currentYear').textContent = new Date().getFullYear();
+        }
+
+        // Renderizar tabla
+        function renderTable(data) {
+            const tbody = document.getElementById('studentsTableBody');
+            const emptyState = document.getElementById('emptyState');
+            const table = document.getElementById('studentsTable');
+
+            if (data.length === 0) {
+                table.style.display = 'none';
+                emptyState.style.display = 'block';
+                return;
+            }
+
+            table.style.display = 'table';
+            emptyState.style.display = 'none';
+
+            tbody.innerHTML = data.map(student => `
+                <tr>
+                    <td><strong>${student.name}</strong></td>
+                    <td>${student.email}</td>
+                    <td>${student.phone}</td>
+                    <td>${student.graduationYear}</td>
+                    <td>${student.career}</td>
+                    <td>${student.occupation}</td>
+                    <td>
+                        <span class="badge badge-${student.availability === 'alta' ? 'high' : student.availability === 'media' ? 'medium' : 'low'}">
+                            ${student.availability.charAt(0).toUpperCase() + student.availability.slice(1)}
+                        </span>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Aplicar filtros
+        function applyFilters() {
+            const nameFilter = document.getElementById('filterName').value.toLowerCase();
+            const yearFilter = document.getElementById('filterYear').value;
+            const emailFilter = document.getElementById('filterEmail').value.toLowerCase();
+            const availabilityFilter = document.getElementById('filterAvailability').value;
+            const careerFilter = document.getElementById('filterCareer').value.toLowerCase();
+
+            filteredData = studentsData.filter(student => {
+                const matchName = !nameFilter || student.name.toLowerCase().includes(nameFilter);
+                const matchYear = !yearFilter || student.graduationYear == yearFilter;
+                const matchEmail = !emailFilter || student.email.toLowerCase().includes(emailFilter);
+                const matchAvailability = !availabilityFilter || student.availability === availabilityFilter;
+                const matchCareer = !careerFilter || student.career.toLowerCase().includes(careerFilter);
+
+                return matchName && matchYear && matchEmail && matchAvailability && matchCareer;
+            });
+
+            renderTable(filteredData);
+        }
+
+        // Limpiar filtros
+        function resetFilters() {
+            document.getElementById('filterName').value = '';
+            document.getElementById('filterYear').value = '';
+            document.getElementById('filterEmail').value = '';
+            document.getElementById('filterAvailability').value = '';
+            document.getElementById('filterCareer').value = '';
+
+            filteredData = [...studentsData];
+            renderTable(filteredData);
+        }
+
+        // Exportar a Excel
+        function exportToExcel() {
+            const data = filteredData.map(s => ({
+                'Nombre': s.name,
+                'Email': s.email,
+                'Teléfono': s.phone,
+                'Año de Graduación': s.graduationYear,
+                'Carrera': s.career,
+                'Ocupación Actual': s.occupation,
+                'Disponibilidad': s.availability.charAt(0).toUpperCase() + s.availability.slice(1)
+            }));
+
+            const ws = XLSX.utils.json_to_sheet(data);
+            
+            // Ajustar ancho de columnas
+            const wscols = [
+                {wch: 30}, // Nombre
+                {wch: 30}, // Email
+                {wch: 15}, // Teléfono
+                {wch: 15}, // Año
+                {wch: 25}, // Carrera
+                {wch: 25}, // Ocupación
+                {wch: 15}  // Disponibilidad
+            ];
+            ws['!cols'] = wscols;
+
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'Estudiantes');
+
+            const filename = `estudiantes_${new Date().toISOString().split('T')[0]}.xlsx`;
+            XLSX.writeFile(wb, filename);
+        }
+
+        // Exportar a PDF
+        function exportToPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('l', 'mm', 'a4'); // landscape
+
+            // Título
+            doc.setFontSize(18);
+            doc.setTextColor(26, 26, 46);
+            doc.text('Listado de Estudiantes - EduConnect', 14, 20);
+
+            // Fecha
+            doc.setFontSize(10);
+            doc.setTextColor(102, 102, 102);
+            doc.text(`Generado el: ${new Date().toLocaleDateString('es-ES')}`, 14, 28);
+
+            // Institución
+            const institutionName = document.getElementById('institutionName').textContent;
+            doc.text(`Institución: ${institutionName}`, 14, 34);
+
+            // Tabla
+            const tableData = filteredData.map(s => [
+                s.name,
+                s.email,
+                s.phone,
+                s.graduationYear.toString(),
+                s.career,
+                s.occupation,
+                s.availability.charAt(0).toUpperCase() + s.availability.slice(1)
+            ]);
+
+            doc.autoTable({
+                head: [['Nombre', 'Email', 'Teléfono', 'Año', 'Carrera', 'Ocupación', 'Disponibilidad']],
+                body: tableData,
+                startY: 40,
+                theme: 'grid',
+                headStyles: {
+                    fillColor: [15, 76, 117],
+                    textColor: [255, 255, 255],
+                    fontSize: 9,
+                    fontStyle: 'bold'
+                },
+                bodyStyles: {
+                    fontSize: 8
+                },
+                alternateRowStyles: {
+                    fillColor: [245, 247, 250]
+                },
+                columnStyles: {
+                    0: { cellWidth: 45 },
+                    1: { cellWidth: 45 },
+                    2: { cellWidth: 30 },
+                    3: { cellWidth: 20 },
+                    4: { cellWidth: 40 },
+                    5: { cellWidth: 40 },
+                    6: { cellWidth: 25 }
+                }
+            });
+
+            // Footer
+            const pageCount = doc.internal.getNumberOfPages();
+            for (let i = 1; i <= pageCount; i++) {
+                doc.setPage(i);
+                doc.setFontSize(8);
+                doc.setTextColor(150);
+                doc.text(
+                    `Página ${i} de ${pageCount}`,
+                    doc.internal.pageSize.getWidth() / 2,
+                    doc.internal.pageSize.getHeight() - 10,
+                    { align: 'center' }
+                );
+            }
+
+            const filename = `estudiantes_${new Date().toISOString().split('T')[0]}.pdf`;
+            doc.save(filename);
+        }
+
+        // Logout
+        function logout() {
+            if (confirm('¿Estás seguro de cerrar sesión?')) {
+                window.location.href = 'index.html';
+            }
+        }
+
+        // Aplicar filtros al presionar Enter
+        document.querySelectorAll('.filter-group input, .filter-group select').forEach(element => {
+            element.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    applyFilters();
+                }
+            });
+        });
+
+        // Inicializar al cargar
+        init();
+    </script>
+</body>
+</html>

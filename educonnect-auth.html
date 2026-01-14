@@ -1,0 +1,1231 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plataforma Educativa - Acceso</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Crimson+Pro:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #1a1a2e;
+            --secondary: #16213e;
+            --accent: #0f4c75;
+            --light-accent: #3282b8;
+            --text: #333;
+            --text-light: #666;
+            --bg: #f8f9fa;
+            --white: #ffffff;
+            --success: #00b894;
+            --error: #d63031;
+            --border: #e1e8ed;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: moveBackground 20s linear infinite;
+        }
+
+        @keyframes moveBackground {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            position: relative;
+            z-index: 1;
+        }
+
+        .auth-wrapper {
+            background: var(--white);
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 30px 80px rgba(0,0,0,0.3);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            min-height: 600px;
+            animation: slideUp 0.6s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .auth-sidebar {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            padding: 60px 50px;
+            color: var(--white);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .auth-sidebar::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            opacity: 0.5;
+        }
+
+        .brand {
+            position: relative;
+            z-index: 1;
+        }
+
+        .brand-logo {
+            font-size: 3em;
+            margin-bottom: 15px;
+            animation: bounce 2s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .brand h1 {
+            font-family: 'Crimson Pro', serif;
+            font-size: 2.5em;
+            font-weight: 600;
+            margin-bottom: 15px;
+            letter-spacing: -0.5px;
+        }
+
+        .brand p {
+            font-size: 1.1em;
+            opacity: 0.9;
+            line-height: 1.6;
+            font-weight: 300;
+        }
+
+        .features {
+            position: relative;
+            z-index: 1;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            opacity: 0;
+            animation: fadeInLeft 0.6s ease-out forwards;
+        }
+
+        .feature-item:nth-child(1) { animation-delay: 0.2s; }
+        .feature-item:nth-child(2) { animation-delay: 0.4s; }
+        .feature-item:nth-child(3) { animation-delay: 0.6s; }
+
+        @keyframes fadeInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .feature-icon {
+            width: 45px;
+            height: 45px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4em;
+            flex-shrink: 0;
+            backdrop-filter: blur(10px);
+        }
+
+        .feature-text {
+            font-size: 0.95em;
+            font-weight: 300;
+        }
+
+        .auth-content {
+            padding: 60px 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .user-type-selector {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 40px;
+        }
+
+        .user-type-btn {
+            flex: 1;
+            padding: 20px;
+            border: 2px solid var(--border);
+            background: var(--white);
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .user-type-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .user-type-btn:hover::before {
+            left: 100%;
+        }
+
+        .user-type-btn:hover {
+            border-color: var(--light-accent);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.2);
+        }
+
+        .user-type-btn.active {
+            border-color: var(--light-accent);
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+        }
+
+        .user-type-icon {
+            font-size: 2em;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .user-type-label {
+            font-weight: 600;
+            color: var(--text);
+            font-size: 0.95em;
+        }
+
+        .auth-form {
+            display: none;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .auth-form.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .form-title {
+            font-family: 'Crimson Pro', serif;
+            font-size: 2em;
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .form-subtitle {
+            color: var(--text-light);
+            margin-bottom: 30px;
+            font-size: 0.95em;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text);
+            font-size: 0.9em;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-size: 0.95em;
+            font-family: 'Outfit', sans-serif;
+            transition: all 0.3s ease;
+            background: var(--white);
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--light-accent);
+            box-shadow: 0 0 0 4px rgba(50, 130, 184, 0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Outfit', sans-serif;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn span {
+            position: relative;
+            z-index: 1;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent) 0%, var(--light-accent) 100%);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(15, 76, 117, 0.3);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 2px solid var(--border);
+            color: var(--text);
+            margin-top: 10px;
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--text);
+        }
+
+        .form-footer {
+            margin-top: 25px;
+            text-align: center;
+            color: var(--text-light);
+            font-size: 0.9em;
+        }
+
+        .form-footer a {
+            color: var(--light-accent);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .form-footer a:hover {
+            color: var(--accent);
+            text-decoration: underline;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 25px 0;
+            color: var(--text-light);
+            font-size: 0.85em;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+
+        .divider span {
+            padding: 0 15px;
+        }
+
+        .alert {
+            padding: 14px 18px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            font-size: 0.9em;
+            display: none;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .alert.show {
+            display: block;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        #appContainer {
+            display: none;
+        }
+
+        #appContainer.active {
+            display: block;
+        }
+
+        .app-header {
+            background: var(--white);
+            padding: 20px 40px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--light-accent) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-weight: 600;
+            font-size: 1.2em;
+        }
+
+        .user-details h3 {
+            font-size: 0.95em;
+            color: var(--text);
+            margin-bottom: 2px;
+        }
+
+        .user-details p {
+            font-size: 0.85em;
+            color: var(--text-light);
+        }
+
+        .app-content {
+            padding: 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .welcome-card {
+            background: linear-gradient(135deg, var(--accent) 0%, var(--light-accent) 100%);
+            color: var(--white);
+            padding: 60px;
+            border-radius: 24px;
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .welcome-card::before {
+            content: '🎓';
+            position: absolute;
+            font-size: 15em;
+            opacity: 0.1;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .welcome-card h1 {
+            font-family: 'Crimson Pro', serif;
+            font-size: 3em;
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .welcome-card p {
+            font-size: 1.2em;
+            opacity: 0.95;
+            position: relative;
+            z-index: 1;
+        }
+
+        @media (max-width: 968px) {
+            .auth-wrapper {
+                grid-template-columns: 1fr;
+            }
+
+            .auth-sidebar {
+                display: none;
+            }
+
+            .auth-content {
+                padding: 40px 30px;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .user-type-selector {
+                flex-direction: column;
+            }
+
+            body {
+                padding: 10px;
+            }
+
+            .auth-content {
+                padding: 30px 20px;
+            }
+
+            .app-content {
+                padding: 20px;
+            }
+
+            .welcome-card {
+                padding: 40px 20px;
+            }
+
+            .welcome-card h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="authContainer">
+        <div class="auth-wrapper">
+            <div class="auth-sidebar">
+                <div class="brand">
+                    <div class="brand-logo">🎓</div>
+                    <h1>EduConnect</h1>
+                    <p>Plataforma integral para la gestión y conexión de egresados, instituciones educativas y docentes.</p>
+                </div>
+
+                <div class="features">
+                    <div class="feature-item">
+                        <div class="feature-icon">🏫</div>
+                        <div class="feature-text">Gestión completa de instituciones educativas</div>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">👨‍🏫</div>
+                        <div class="feature-text">Portal exclusivo para docentes</div>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">🎯</div>
+                        <div class="feature-text">Seguimiento integral de egresados</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="auth-content">
+                <div class="user-type-selector">
+                    <div class="user-type-btn active" onclick="selectUserType('institution')">
+                        <span class="user-type-icon">🏫</span>
+                        <div class="user-type-label">Institución</div>
+                    </div>
+                    <div class="user-type-btn" onclick="selectUserType('teacher')">
+                        <span class="user-type-icon">👨‍🏫</span>
+                        <div class="user-type-label">Docente</div>
+                    </div>
+                    <div class="user-type-btn" onclick="selectUserType('student')">
+                        <span class="user-type-icon">🎓</span>
+                        <div class="user-type-label">Estudiante</div>
+                    </div>
+                </div>
+
+                <div id="alertContainer"></div>
+
+                <!-- Formulario Institución -->
+                <form class="auth-form active" id="institutionForm">
+                    <h2 class="form-title">Registro de Institución</h2>
+                    <p class="form-subtitle">Complete los datos de su institución educativa</p>
+
+                    <div class="form-group">
+                        <label>Nombre de la Institución *</label>
+                        <input type="text" id="inst_name" required>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Barrio *</label>
+                            <input type="text" id="inst_neighborhood" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Municipio *</label>
+                            <input type="text" id="inst_municipality" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Departamento *</label>
+                            <input type="text" id="inst_department" required>
+                        </div>
+                        <div class="form-group">
+                            <label>País *</label>
+                            <input type="text" id="inst_country" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Email Institucional *</label>
+                        <input type="email" id="inst_email" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Contraseña *</label>
+                        <input type="password" id="inst_password" required>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">
+                        <span>Registrar Institución</span>
+                    </button>
+
+                    <div class="divider">
+                        <span>o</span>
+                    </div>
+
+                    <button type="button" class="btn btn-secondary" onclick="toggleMode('institution')">
+                        <span>Iniciar Sesión</span>
+                    </button>
+
+                    <div class="form-footer">
+                        <p>Al registrarse, acepta nuestros <a href="#">Términos y Condiciones</a></p>
+                    </div>
+                </form>
+
+                <!-- Formulario Docente -->
+                <form class="auth-form" id="teacherForm">
+                    <h2 class="form-title">Registro de Docente</h2>
+                    <p class="form-subtitle">Complete sus datos y seleccione su institución</p>
+
+                    <div class="form-group">
+                        <label>Nombre Completo *</label>
+                        <input type="text" id="teacher_name" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Email *</label>
+                        <input type="email" id="teacher_email" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>País *</label>
+                        <select id="teacher_country" onchange="filterInstitutions('teacher')" required>
+                            <option value="">Seleccione un país</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Departamento *</label>
+                        <select id="teacher_department" onchange="filterInstitutions('teacher')" required>
+                            <option value="">Seleccione un departamento</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Municipio *</label>
+                        <select id="teacher_municipality" onchange="filterInstitutions('teacher')" required>
+                            <option value="">Seleccione un municipio</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Barrio *</label>
+                        <select id="teacher_neighborhood" onchange="filterInstitutions('teacher')" required>
+                            <option value="">Seleccione un barrio</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Institución *</label>
+                        <select id="teacher_institution" required>
+                            <option value="">Seleccione una institución</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Contraseña *</label>
+                        <input type="password" id="teacher_password" required>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">
+                        <span>Registrar Docente</span>
+                    </button>
+
+                    <div class="divider">
+                        <span>o</span>
+                    </div>
+
+                    <button type="button" class="btn btn-secondary" onclick="toggleMode('teacher')">
+                        <span>Iniciar Sesión</span>
+                    </button>
+                </form>
+
+                <!-- Formulario Estudiante -->
+                <form class="auth-form" id="studentForm">
+                    <h2 class="form-title">Registro de Estudiante</h2>
+                    <p class="form-subtitle">Complete sus datos y seleccione su institución</p>
+
+                    <div class="form-group">
+                        <label>Nombre Completo *</label>
+                        <input type="text" id="student_name" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Email *</label>
+                        <input type="email" id="student_email" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>País *</label>
+                        <select id="student_country" onchange="filterInstitutions('student')" required>
+                            <option value="">Seleccione un país</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Departamento *</label>
+                        <select id="student_department" onchange="filterInstitutions('student')" required>
+                            <option value="">Seleccione un departamento</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Municipio *</label>
+                        <select id="student_municipality" onchange="filterInstitutions('student')" required>
+                            <option value="">Seleccione un municipio</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Barrio *</label>
+                        <select id="student_neighborhood" onchange="filterInstitutions('student')" required>
+                            <option value="">Seleccione un barrio</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Institución *</label>
+                        <select id="student_institution" required>
+                            <option value="">Seleccione una institución</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Año de Graduación</label>
+                        <input type="number" id="student_year" min="1950" max="2030">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Contraseña *</label>
+                        <input type="password" id="student_password" required>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">
+                        <span>Registrar Estudiante</span>
+                    </button>
+
+                    <div class="divider">
+                        <span>o</span>
+                    </div>
+
+                    <button type="button" class="btn btn-secondary" onclick="toggleMode('student')">
+                        <span>Iniciar Sesión</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Aplicación Principal -->
+    <div id="appContainer">
+        <div class="app-header">
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <div style="font-size: 2em;">🎓</div>
+                <div>
+                    <h2 style="font-family: 'Crimson Pro', serif; font-size: 1.5em; color: var(--primary);">EduConnect</h2>
+                    <p style="font-size: 0.85em; color: var(--text-light);">Plataforma Educativa</p>
+                </div>
+            </div>
+            <div class="user-info">
+                <div class="user-avatar" id="userAvatar"></div>
+                <div class="user-details">
+                    <h3 id="userName"></h3>
+                    <p id="userRole"></p>
+                </div>
+                <button class="btn btn-secondary" style="width: auto; padding: 10px 20px; margin: 0;" onclick="logout()">
+                    <span>Cerrar Sesión</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="app-content">
+            <div class="welcome-card">
+                <h1 id="welcomeTitle">¡Bienvenido a EduConnect!</h1>
+                <p id="welcomeMessage">Tu plataforma para conectar con tu comunidad educativa</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let appData = {
+            institutions: [],
+            teachers: [],
+            students: [],
+            currentUser: null
+        };
+
+        let isLoginMode = {
+            institution: false,
+            teacher: false,
+            student: false
+        };
+
+        // Cargar datos
+        function loadData() {
+            const saved = localStorage.getItem('eduConnectData');
+            if (saved) {
+                appData = JSON.parse(saved);
+            }
+            updateLocationSelects();
+        }
+
+        // Guardar datos
+        function saveData() {
+            localStorage.setItem('eduConnectData', JSON.stringify(appData));
+        }
+
+        // Seleccionar tipo de usuario
+        function selectUserType(type) {
+            document.querySelectorAll('.user-type-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.closest('.user-type-btn').classList.add('active');
+
+            document.querySelectorAll('.auth-form').forEach(form => form.classList.remove('active'));
+            document.getElementById(`${type}Form`).classList.add('active');
+
+            // Reset login mode
+            const forms = ['institution', 'teacher', 'student'];
+            forms.forEach(f => {
+                if (f !== type) {
+                    isLoginMode[f] = false;
+                }
+            });
+        }
+
+        // Toggle entre registro e inicio de sesión
+        function toggleMode(type) {
+            isLoginMode[type] = !isLoginMode[type];
+            const form = document.getElementById(`${type}Form`);
+            const title = form.querySelector('.form-title');
+            const subtitle = form.querySelector('.form-subtitle');
+            const submitBtn = form.querySelector('.btn-primary span');
+            const toggleBtn = form.querySelector('.btn-secondary span');
+
+            if (isLoginMode[type]) {
+                title.textContent = `Iniciar Sesión - ${type === 'institution' ? 'Institución' : type === 'teacher' ? 'Docente' : 'Estudiante'}`;
+                subtitle.textContent = 'Ingrese sus credenciales';
+                submitBtn.textContent = 'Iniciar Sesión';
+                toggleBtn.textContent = 'Registrarse';
+
+                // Ocultar campos innecesarios en login
+                if (type === 'institution') {
+                    ['neighborhood', 'municipality', 'department', 'country', 'name'].forEach(field => {
+                        const input = document.getElementById(`inst_${field}`);
+                        if (input) input.closest('.form-group').style.display = 'none';
+                    });
+                } else {
+                    const prefix = type === 'teacher' ? 'teacher' : 'student';
+                    ['name', 'country', 'department', 'municipality', 'neighborhood', 'institution'].forEach(field => {
+                        const input = document.getElementById(`${prefix}_${field}`);
+                        if (input) input.closest('.form-group').style.display = 'none';
+                    });
+                    if (type === 'student') {
+                        const yearInput = document.getElementById('student_year');
+                        if (yearInput) yearInput.closest('.form-group').style.display = 'none';
+                    }
+                }
+            } else {
+                title.textContent = `Registro de ${type === 'institution' ? 'Institución' : type === 'teacher' ? 'Docente' : 'Estudiante'}`;
+                subtitle.textContent = type === 'institution' ? 
+                    'Complete los datos de su institución educativa' : 
+                    'Complete sus datos y seleccione su institución';
+                submitBtn.textContent = `Registrar ${type === 'institution' ? 'Institución' : type === 'teacher' ? 'Docente' : 'Estudiante'}`;
+                toggleBtn.textContent = 'Iniciar Sesión';
+
+                // Mostrar todos los campos
+                form.querySelectorAll('.form-group').forEach(group => {
+                    group.style.display = 'block';
+                });
+            }
+        }
+
+        // Actualizar selectores de ubicación
+        function updateLocationSelects() {
+            const countries = [...new Set(appData.institutions.map(i => i.country))];
+            
+            ['teacher', 'student'].forEach(type => {
+                const countrySelect = document.getElementById(`${type}_country`);
+                countrySelect.innerHTML = '<option value="">Seleccione un país</option>';
+                countries.forEach(country => {
+                    const option = document.createElement('option');
+                    option.value = country;
+                    option.textContent = country;
+                    countrySelect.appendChild(option);
+                });
+            });
+        }
+
+        // Filtrar instituciones por ubicación
+        function filterInstitutions(type) {
+            const country = document.getElementById(`${type}_country`).value;
+            const department = document.getElementById(`${type}_department`).value;
+            const municipality = document.getElementById(`${type}_municipality`).value;
+            const neighborhood = document.getElementById(`${type}_neighborhood`).value;
+
+            let filtered = appData.institutions;
+
+            if (country) {
+                filtered = filtered.filter(i => i.country === country);
+                
+                // Actualizar departamentos
+                const departments = [...new Set(filtered.map(i => i.department))];
+                const deptSelect = document.getElementById(`${type}_department`);
+                deptSelect.innerHTML = '<option value="">Seleccione un departamento</option>';
+                departments.forEach(dept => {
+                    const option = document.createElement('option');
+                    option.value = dept;
+                    option.textContent = dept;
+                    deptSelect.appendChild(option);
+                });
+            }
+
+            if (department) {
+                filtered = filtered.filter(i => i.department === department);
+                
+                // Actualizar municipios
+                const municipalities = [...new Set(filtered.map(i => i.municipality))];
+                const munSelect = document.getElementById(`${type}_municipality`);
+                munSelect.innerHTML = '<option value="">Seleccione un municipio</option>';
+                municipalities.forEach(mun => {
+                    const option = document.createElement('option');
+                    option.value = mun;
+                    option.textContent = mun;
+                    munSelect.appendChild(option);
+                });
+            }
+
+            if (municipality) {
+                filtered = filtered.filter(i => i.municipality === municipality);
+                
+                // Actualizar barrios
+                const neighborhoods = [...new Set(filtered.map(i => i.neighborhood))];
+                const neighSelect = document.getElementById(`${type}_neighborhood`);
+                neighSelect.innerHTML = '<option value="">Seleccione un barrio</option>';
+                neighborhoods.forEach(neigh => {
+                    const option = document.createElement('option');
+                    option.value = neigh;
+                    option.textContent = neigh;
+                    neighSelect.appendChild(option);
+                });
+            }
+
+            if (neighborhood) {
+                filtered = filtered.filter(i => i.neighborhood === neighborhood);
+            }
+
+            // Actualizar instituciones
+            const instSelect = document.getElementById(`${type}_institution`);
+            instSelect.innerHTML = '<option value="">Seleccione una institución</option>';
+            filtered.forEach(inst => {
+                const option = document.createElement('option');
+                option.value = inst.id;
+                option.textContent = inst.name;
+                instSelect.appendChild(option);
+            });
+        }
+
+        // Mostrar alertas
+        function showAlert(message, type) {
+            const container = document.getElementById('alertContainer');
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type} show`;
+            alert.textContent = message;
+            container.innerHTML = '';
+            container.appendChild(alert);
+
+            setTimeout(() => {
+                alert.classList.remove('show');
+                setTimeout(() => alert.remove(), 300);
+            }, 3000);
+        }
+
+        // Registro de Institución
+        document.getElementById('institutionForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            if (isLoginMode.institution) {
+                // Login
+                const email = document.getElementById('inst_email').value;
+                const password = document.getElementById('inst_password').value;
+
+                const institution = appData.institutions.find(i => 
+                    i.email === email && i.password === password
+                );
+
+                if (institution) {
+                    login(institution, 'institution');
+                } else {
+                    showAlert('Credenciales incorrectas', 'error');
+                }
+            } else {
+                // Registro
+                const institution = {
+                    id: Date.now(),
+                    name: document.getElementById('inst_name').value,
+                    neighborhood: document.getElementById('inst_neighborhood').value,
+                    municipality: document.getElementById('inst_municipality').value,
+                    department: document.getElementById('inst_department').value,
+                    country: document.getElementById('inst_country').value,
+                    email: document.getElementById('inst_email').value,
+                    password: document.getElementById('inst_password').value,
+                    createdAt: new Date().toISOString()
+                };
+
+                appData.institutions.push(institution);
+                saveData();
+                updateLocationSelects();
+                showAlert('Institución registrada exitosamente', 'success');
+                this.reset();
+            }
+        });
+
+        // Registro de Docente
+        document.getElementById('teacherForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            if (isLoginMode.teacher) {
+                // Login
+                const email = document.getElementById('teacher_email').value;
+                const password = document.getElementById('teacher_password').value;
+
+                const teacher = appData.teachers.find(t => 
+                    t.email === email && t.password === password
+                );
+
+                if (teacher) {
+                    login(teacher, 'teacher');
+                } else {
+                    showAlert('Credenciales incorrectas', 'error');
+                }
+            } else {
+                // Registro
+                const teacher = {
+                    id: Date.now(),
+                    name: document.getElementById('teacher_name').value,
+                    email: document.getElementById('teacher_email').value,
+                    institutionId: parseInt(document.getElementById('teacher_institution').value),
+                    password: document.getElementById('teacher_password').value,
+                    createdAt: new Date().toISOString()
+                };
+
+                appData.teachers.push(teacher);
+                saveData();
+                showAlert('Docente registrado exitosamente', 'success');
+                this.reset();
+            }
+        });
+
+        // Registro de Estudiante
+        document.getElementById('studentForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            if (isLoginMode.student) {
+                // Login
+                const email = document.getElementById('student_email').value;
+                const password = document.getElementById('student_password').value;
+
+                const student = appData.students.find(s => 
+                    s.email === email && s.password === password
+                );
+
+                if (student) {
+                    login(student, 'student');
+                } else {
+                    showAlert('Credenciales incorrectas', 'error');
+                }
+            } else {
+                // Registro
+                const student = {
+                    id: Date.now(),
+                    name: document.getElementById('student_name').value,
+                    email: document.getElementById('student_email').value,
+                    institutionId: parseInt(document.getElementById('student_institution').value),
+                    graduationYear: document.getElementById('student_year').value || null,
+                    password: document.getElementById('student_password').value,
+                    createdAt: new Date().toISOString()
+                };
+
+                appData.students.push(student);
+                saveData();
+                showAlert('Estudiante registrado exitosamente', 'success');
+                this.reset();
+            }
+        });
+
+        // Login
+        function login(user, type) {
+            appData.currentUser = { ...user, type };
+            saveData();
+
+            document.getElementById('authContainer').style.display = 'none';
+            document.getElementById('appContainer').classList.add('active');
+
+            const initials = user.name.split(' ').map(n => n[0]).join('').toUpperCase();
+            document.getElementById('userAvatar').textContent = initials;
+            document.getElementById('userName').textContent = user.name;
+            
+            const roleNames = {
+                institution: 'Institución',
+                teacher: 'Docente',
+                student: 'Estudiante/Egresado'
+            };
+            document.getElementById('userRole').textContent = roleNames[type];
+
+            document.getElementById('welcomeTitle').textContent = `¡Bienvenido, ${user.name}!`;
+            
+            if (type === 'institution') {
+                document.getElementById('welcomeMessage').textContent = 
+                    'Gestiona tu institución y conecta con docentes y egresados';
+            } else if (type === 'teacher') {
+                const inst = appData.institutions.find(i => i.id === user.institutionId);
+                document.getElementById('welcomeMessage').textContent = 
+                    `Docente en ${inst ? inst.name : 'tu institución'}`;
+            } else {
+                const inst = appData.institutions.find(i => i.id === user.institutionId);
+                document.getElementById('welcomeMessage').textContent = 
+                    `Egresado de ${inst ? inst.name : 'tu institución'}`;
+            }
+        }
+
+        // Logout
+        function logout() {
+            appData.currentUser = null;
+            saveData();
+
+            document.getElementById('authContainer').style.display = 'block';
+            document.getElementById('appContainer').classList.remove('active');
+        }
+
+        // Verificar sesión
+        function checkSession() {
+            if (appData.currentUser) {
+                login(appData.currentUser, appData.currentUser.type);
+            }
+        }
+
+        // Inicializar
+        loadData();
+        checkSession();
+    </script>
+</body>
+</html>
