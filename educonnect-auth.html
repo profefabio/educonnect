@@ -1288,8 +1288,13 @@
                 appData.institutions.push(institution);
                 saveData();
                 updateLocationSelects();
-                showAlert('Institución registrada exitosamente', 'success');
-                this.reset();
+                showAlert('✅ Institución registrada exitosamente. Ahora puedes iniciar sesión.', 'success');
+                
+                // Cambiar a modo login después de 2 segundos
+                setTimeout(() => {
+                    this.reset();
+                    toggleMode('institution');
+                }, 2000);
             }
         });
 
@@ -1324,8 +1329,13 @@
 
                 appData.teachers.push(teacher);
                 saveData();
-                showAlert('Docente registrado exitosamente', 'success');
-                this.reset();
+                showAlert('✅ Docente registrado exitosamente. Ahora puedes iniciar sesión.', 'success');
+                
+                // Cambiar a modo login después de 2 segundos
+                setTimeout(() => {
+                    this.reset();
+                    toggleMode('teacher');
+                }, 2000);
             }
         });
 
@@ -1355,14 +1365,24 @@
                     email: document.getElementById('student_email').value,
                     institutionId: parseInt(document.getElementById('student_institution').value),
                     graduationYear: document.getElementById('student_year').value || null,
+                    career: '',
+                    occupation: '',
+                    availability: '',
+                    phone: '',
+                    linkedin: '',
                     password: document.getElementById('student_password').value,
                     createdAt: new Date().toISOString()
                 };
 
                 appData.students.push(student);
                 saveData();
-                showAlert('Estudiante registrado exitosamente', 'success');
-                this.reset();
+                showAlert('✅ Estudiante registrado exitosamente. Ahora puedes iniciar sesión.', 'success');
+                
+                // Cambiar a modo login después de 2 segundos
+                setTimeout(() => {
+                    this.reset();
+                    toggleMode('student');
+                }, 2000);
             }
         });
 
@@ -1373,10 +1393,13 @@
 
             // Redirigir según el tipo de usuario
             if (type === 'teacher') {
-                // Docentes van al dashboard
+                // Docentes van al dashboard de docentes
                 window.location.href = 'teacher-dashboard.html';
-            } else if (type === 'student' || type === 'institution') {
-                // Estudiantes e instituciones van a la página interna
+            } else if (type === 'student') {
+                // Estudiantes van al dashboard de estudiantes
+                window.location.href = 'student-dashboard.html';
+            } else if (type === 'institution') {
+                // Instituciones van a la página interna
                 document.getElementById('authContainer').style.display = 'none';
                 document.getElementById('appContainer').classList.add('active');
 
@@ -1384,22 +1407,11 @@
                 document.getElementById('userAvatar').textContent = initials;
                 document.getElementById('userName').textContent = user.name;
                 
-                const roleNames = {
-                    institution: 'Institución',
-                    student: 'Estudiante/Egresado'
-                };
-                document.getElementById('userRole').textContent = roleNames[type];
+                document.getElementById('userRole').textContent = 'Institución';
 
                 document.getElementById('welcomeTitle').textContent = `¡Bienvenido, ${user.name}!`;
-                
-                if (type === 'institution') {
-                    document.getElementById('welcomeMessage').textContent = 
-                        'Gestiona tu institución y conecta con docentes y egresados';
-                } else {
-                    const inst = appData.institutions.find(i => i.id === user.institutionId);
-                    document.getElementById('welcomeMessage').textContent = 
-                        `Egresado de ${inst ? inst.name : 'tu institución'}`;
-                }
+                document.getElementById('welcomeMessage').textContent = 
+                    'Gestiona tu institución y conecta con docentes y egresados';
             }
         }
 
