@@ -951,6 +951,69 @@
                         createdAt: new Date().toISOString()
                     }
                 ];
+                
+                // Agregar docentes de prueba
+                appData.teachers = [
+                    {
+                        id: 101,
+                        name: "Fabio Alberto Ortiz M",
+                        email: "fabioortiz37422@sabaneta.edu.co",
+                        institutionId: 1,
+                        password: "docente123",
+                        createdAt: new Date().toISOString()
+                    },
+                    {
+                        id: 102,
+                        name: "María Elena Gómez",
+                        email: "maria.gomez@sabaneta.edu.co",
+                        institutionId: 2,
+                        password: "docente123",
+                        createdAt: new Date().toISOString()
+                    }
+                ];
+                
+                // Agregar estudiantes de prueba
+                appData.students = [
+                    {
+                        id: 201,
+                        name: "Carlos Andrés Pérez",
+                        email: "carlos.perez@estudiante.com",
+                        phone: "300-123-4567",
+                        institutionId: 1,
+                        graduationYear: 2020,
+                        career: "Ingeniería de Sistemas",
+                        occupation: "Desarrollador",
+                        availability: "alta",
+                        password: "estudiante123",
+                        createdAt: new Date().toISOString()
+                    },
+                    {
+                        id: 202,
+                        name: "Ana María Rodríguez",
+                        email: "ana.rodriguez@estudiante.com",
+                        phone: "301-234-5678",
+                        institutionId: 1,
+                        graduationYear: 2019,
+                        career: "Administración",
+                        occupation: "Gerente",
+                        availability: "media",
+                        password: "estudiante123",
+                        createdAt: new Date().toISOString()
+                    },
+                    {
+                        id: 203,
+                        name: "Luis Fernando Silva",
+                        email: "luis.silva@estudiante.com",
+                        phone: "302-345-6789",
+                        institutionId: 2,
+                        graduationYear: 2021,
+                        career: "Diseño Gráfico",
+                        occupation: "Diseñador Senior",
+                        availability: "alta",
+                        password: "estudiante123",
+                        createdAt: new Date().toISOString()
+                    }
+                ];
             }
             updateLocationSelects();
         }
@@ -1277,33 +1340,35 @@
             appData.currentUser = { ...user, type };
             saveData();
 
-            document.getElementById('authContainer').style.display = 'none';
-            document.getElementById('appContainer').classList.add('active');
+            // Redirigir según el tipo de usuario
+            if (type === 'teacher') {
+                // Docentes van al dashboard
+                window.location.href = 'teacher-dashboard.html';
+            } else if (type === 'student' || type === 'institution') {
+                // Estudiantes e instituciones van a la página interna
+                document.getElementById('authContainer').style.display = 'none';
+                document.getElementById('appContainer').classList.add('active');
 
-            const initials = user.name.split(' ').map(n => n[0]).join('').toUpperCase();
-            document.getElementById('userAvatar').textContent = initials;
-            document.getElementById('userName').textContent = user.name;
-            
-            const roleNames = {
-                institution: 'Institución',
-                teacher: 'Docente',
-                student: 'Estudiante/Egresado'
-            };
-            document.getElementById('userRole').textContent = roleNames[type];
+                const initials = user.name.split(' ').map(n => n[0]).join('').toUpperCase();
+                document.getElementById('userAvatar').textContent = initials;
+                document.getElementById('userName').textContent = user.name;
+                
+                const roleNames = {
+                    institution: 'Institución',
+                    student: 'Estudiante/Egresado'
+                };
+                document.getElementById('userRole').textContent = roleNames[type];
 
-            document.getElementById('welcomeTitle').textContent = `¡Bienvenido, ${user.name}!`;
-            
-            if (type === 'institution') {
-                document.getElementById('welcomeMessage').textContent = 
-                    'Gestiona tu institución y conecta con docentes y egresados';
-            } else if (type === 'teacher') {
-                const inst = appData.institutions.find(i => i.id === user.institutionId);
-                document.getElementById('welcomeMessage').textContent = 
-                    `Docente en ${inst ? inst.name : 'tu institución'}`;
-            } else {
-                const inst = appData.institutions.find(i => i.id === user.institutionId);
-                document.getElementById('welcomeMessage').textContent = 
-                    `Egresado de ${inst ? inst.name : 'tu institución'}`;
+                document.getElementById('welcomeTitle').textContent = `¡Bienvenido, ${user.name}!`;
+                
+                if (type === 'institution') {
+                    document.getElementById('welcomeMessage').textContent = 
+                        'Gestiona tu institución y conecta con docentes y egresados';
+                } else {
+                    const inst = appData.institutions.find(i => i.id === user.institutionId);
+                    document.getElementById('welcomeMessage').textContent = 
+                        `Egresado de ${inst ? inst.name : 'tu institución'}`;
+                }
             }
         }
 
