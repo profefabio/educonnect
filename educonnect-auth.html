@@ -1025,9 +1025,13 @@
 
         // Seleccionar tipo de usuario
         function selectUserType(type, preserveLoginMode = false) {
-            // ... código para cambiar tabs ...
-            
-            // Reset login mode solo si no se está preservando ✅
+            document.querySelectorAll('.user-type-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.closest('.user-type-btn').classList.add('active');
+
+            document.querySelectorAll('.auth-form').forEach(form => form.classList.remove('active'));
+            document.getElementById(`${type}Form`).classList.add('active');
+
+            // Reset login mode solo si no se está preservando
             if (!preserveLoginMode) {
                 const forms = ['institution', 'teacher', 'student'];
                 forms.forEach(f => {
@@ -1548,39 +1552,65 @@
         
         // Función para seleccionar rol y cambiar a modo login
         window.selectRoleAndLogin = function(role) {
-            // 1. Remover overlay
+            // Remover overlay
             document.querySelector('div[style*="position: fixed"]').remove();
             
-            // 2. PRIMERO: Activar modo login ✅
+            // PRIMERO: Activar modo login para este rol
             isLoginMode[role] = true;
             
-            // 3. SEGUNDO: Cambiar el tab activo
-            document.querySelectorAll('.user-type-btn').forEach(b => b.classList.remove('active'));
-            // Seleccionar botón correcto (0=institución, 1=teacher, 2=student)
+            // SEGUNDO: Seleccionar el tipo de usuario (sin resetear el modo login)
+            // Simular el evento ya que selectUserType usa event.target
             const btn = document.querySelectorAll('.user-type-btn')[
                 role === 'institution' ? 0 : role === 'teacher' ? 1 : 2
             ];
+            const fakeEvent = { target: btn };
+            window.event = fakeEvent;
+            
+            document.querySelectorAll('.user-type-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             
-            // Mostrar formulario correcto
             document.querySelectorAll('.auth-form').forEach(form => form.classList.remove('active'));
             document.getElementById(`${role}Form`).classList.add('active');
             
-            // 4. TERCERO: Aplicar UI de modo login ✅
+            // TERCERO: Aplicar la UI del modo login
             const form = document.getElementById(`${role}Form`);
             const title = form.querySelector('.form-title');
             const subtitle = form.querySelector('.form-subtitle');
             const submitBtn = form.querySelector('.btn-primary span');
             const toggleBtn = form.querySelector('.btn-secondary span');
             
-            title.textContent = 'Iniciar Sesión - ' + (role === 'institution' ? 'Institución' : 
-                                                       role === 'teacher' ? 'Docente' : 'Estudiante');
+            // Cambiar textos a modo login
+            title.textContent = `Iniciar Sesión - ${role === 'institution' ? 'Institución' : role === 'teacher' ? 'Docente' : 'Estudiante'}`;
             subtitle.textContent = 'Ingrese sus credenciales';
             submitBtn.textContent = 'Iniciar Sesión';
             toggleBtn.textContent = 'Registrarse';
             
-            // 5. Ocultar campos innecesarios
-            // ... código para ocultar campos y remover required ...
+            // Ocultar campos innecesarios y remover required
+            if (role === 'institution') {
+                ['neighborhood', 'municipality', 'department', 'country', 'name'].forEach(field => {
+                    const input = document.getElementById(`inst_${field}`);
+                    if (input) {
+                        input.closest('.form-group').style.display = 'none';
+                        input.removeAttribute('required');
+                    }
+                });
+            } else {
+                const prefix = role === 'teacher' ? 'teacher' : 'student';
+                ['name', 'country', 'department', 'municipality', 'neighborhood', 'institution'].forEach(field => {
+                    const input = document.getElementById(`${prefix}_${field}`);
+                    if (input) {
+                        input.closest('.form-group').style.display = 'none';
+                        input.removeAttribute('required');
+                    }
+                });
+                if (role === 'student') {
+                    const yearInput = document.getElementById('student_year');
+                    if (yearInput) {
+                        yearInput.closest('.form-group').style.display = 'none';
+                        yearInput.removeAttribute('required');
+                    }
+                }
+            }
         };
     </script>
 </body>
