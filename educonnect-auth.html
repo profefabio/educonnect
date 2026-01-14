@@ -892,6 +892,65 @@
             const saved = localStorage.getItem('eduConnectData');
             if (saved) {
                 appData = JSON.parse(saved);
+            } else {
+                // Agregar instituciones de prueba si no hay datos
+                appData.institutions = [
+                    {
+                        id: 1,
+                        name: "I.E. María Auxiliadora",
+                        neighborhood: "El Carmelo",
+                        municipality: "Sabaneta",
+                        department: "Antioquia",
+                        country: "Colombia",
+                        email: "contacto@mariaauxiliadora.edu.co",
+                        password: "demo123",
+                        createdAt: new Date().toISOString()
+                    },
+                    {
+                        id: 2,
+                        name: "I.E. José María Córdoba",
+                        neighborhood: "Las Vegas",
+                        municipality: "Sabaneta",
+                        department: "Antioquia",
+                        country: "Colombia",
+                        email: "contacto@josemaria.edu.co",
+                        password: "demo123",
+                        createdAt: new Date().toISOString()
+                    },
+                    {
+                        id: 3,
+                        name: "Colegio San José",
+                        neighborhood: "El Poblado",
+                        municipality: "Medellín",
+                        department: "Antioquia",
+                        country: "Colombia",
+                        email: "contacto@sanjose.edu.co",
+                        password: "demo123",
+                        createdAt: new Date().toISOString()
+                    },
+                    {
+                        id: 4,
+                        name: "I.E. Concejo de Sabaneta",
+                        neighborhood: "San Joaquín",
+                        municipality: "Sabaneta",
+                        department: "Antioquia",
+                        country: "Colombia",
+                        email: "contacto@concejo.edu.co",
+                        password: "demo123",
+                        createdAt: new Date().toISOString()
+                    },
+                    {
+                        id: 5,
+                        name: "Colegio de la Presentación",
+                        neighborhood: "Laureles",
+                        municipality: "Medellín",
+                        department: "Antioquia",
+                        country: "Colombia",
+                        email: "contacto@presentacion.edu.co",
+                        password: "demo123",
+                        createdAt: new Date().toISOString()
+                    }
+                ];
             }
             updateLocationSelects();
         }
@@ -990,12 +1049,18 @@
 
             let filtered = appData.institutions;
 
+            // Limpiar selectores siguientes cuando se cambia uno anterior
+            const deptSelect = document.getElementById(`${type}_department`);
+            const munSelect = document.getElementById(`${type}_municipality`);
+            const neighSelect = document.getElementById(`${type}_neighborhood`);
+            const instSelect = document.getElementById(`${type}_institution`);
+
             if (country) {
                 filtered = filtered.filter(i => i.country === country);
                 
                 // Actualizar departamentos
                 const departments = [...new Set(filtered.map(i => i.department))];
-                const deptSelect = document.getElementById(`${type}_department`);
+                const currentDept = deptSelect.value;
                 deptSelect.innerHTML = '<option value="">Seleccione un departamento</option>';
                 departments.forEach(dept => {
                     const option = document.createElement('option');
@@ -1003,6 +1068,17 @@
                     option.textContent = dept;
                     deptSelect.appendChild(option);
                 });
+                // Restaurar selección si existe
+                if (currentDept && departments.includes(currentDept)) {
+                    deptSelect.value = currentDept;
+                }
+                
+                // Limpiar municipios, barrios e instituciones si no hay departamento seleccionado
+                if (!department) {
+                    munSelect.innerHTML = '<option value="">Seleccione un municipio</option>';
+                    neighSelect.innerHTML = '<option value="">Seleccione un barrio</option>';
+                    instSelect.innerHTML = '<option value="">Seleccione una institución</option>';
+                }
             }
 
             if (department) {
@@ -1010,7 +1086,7 @@
                 
                 // Actualizar municipios
                 const municipalities = [...new Set(filtered.map(i => i.municipality))];
-                const munSelect = document.getElementById(`${type}_municipality`);
+                const currentMun = munSelect.value;
                 munSelect.innerHTML = '<option value="">Seleccione un municipio</option>';
                 municipalities.forEach(mun => {
                     const option = document.createElement('option');
@@ -1018,6 +1094,16 @@
                     option.textContent = mun;
                     munSelect.appendChild(option);
                 });
+                // Restaurar selección si existe
+                if (currentMun && municipalities.includes(currentMun)) {
+                    munSelect.value = currentMun;
+                }
+                
+                // Limpiar barrios e instituciones si no hay municipio seleccionado
+                if (!municipality) {
+                    neighSelect.innerHTML = '<option value="">Seleccione un barrio</option>';
+                    instSelect.innerHTML = '<option value="">Seleccione una institución</option>';
+                }
             }
 
             if (municipality) {
@@ -1025,7 +1111,7 @@
                 
                 // Actualizar barrios
                 const neighborhoods = [...new Set(filtered.map(i => i.neighborhood))];
-                const neighSelect = document.getElementById(`${type}_neighborhood`);
+                const currentNeigh = neighSelect.value;
                 neighSelect.innerHTML = '<option value="">Seleccione un barrio</option>';
                 neighborhoods.forEach(neigh => {
                     const option = document.createElement('option');
@@ -1033,6 +1119,15 @@
                     option.textContent = neigh;
                     neighSelect.appendChild(option);
                 });
+                // Restaurar selección si existe
+                if (currentNeigh && neighborhoods.includes(currentNeigh)) {
+                    neighSelect.value = currentNeigh;
+                }
+                
+                // Limpiar instituciones si no hay barrio seleccionado
+                if (!neighborhood) {
+                    instSelect.innerHTML = '<option value="">Seleccione una institución</option>';
+                }
             }
 
             if (neighborhood) {
@@ -1040,7 +1135,6 @@
             }
 
             // Actualizar instituciones
-            const instSelect = document.getElementById(`${type}_institution`);
             instSelect.innerHTML = '<option value="">Seleccione una institución</option>';
             filtered.forEach(inst => {
                 const option = document.createElement('option');
