@@ -328,6 +328,30 @@
         .footer p {
             opacity: 0.8;
             font-size: 1em;
+            margin-bottom: 10px;
+        }
+
+        .footer a {
+            color: var(--white);
+            text-decoration: none;
+            opacity: 0.9;
+            transition: opacity 0.3s ease;
+        }
+
+        .footer a:hover {
+            opacity: 1;
+            text-decoration: underline;
+        }
+
+        .developer-info {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.2);
+            font-size: 0.95em;
+        }
+
+        .developer-info p {
+            margin: 5px 0;
         }
 
         /* Scroll Indicator */
@@ -503,6 +527,10 @@
     <!-- Footer -->
     <footer class="footer">
         <p>&copy; 2026 EduConnect. Conectando generaciones educativas.</p>
+        <div class="developer-info">
+            <p><strong>Desarrollado por:</strong> Fabio Alberto Ortiz M</p>
+            <p><strong>Contacto:</strong> <a href="mailto:fabioortiz37422@sabaneta.edu.co">fabioortiz37422@sabaneta.edu.co</a></p>
+        </div>
     </footer>
 
     <script>
