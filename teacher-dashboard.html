@@ -4,10 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EduConnect - Dashboard Docente</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Crimson+Pro:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Crimson+Pro:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -20,13 +20,13 @@
             --secondary: #16213e;
             --accent: #0f4c75;
             --light-accent: #3282b8;
-            --text: #333;
-            --text-light: #666;
-            --bg: #f5f7fa;
-            --white: #ffffff;
             --success: #00b894;
             --warning: #fdcb6e;
             --danger: #d63031;
+            --bg: #f5f7fa;
+            --white: #ffffff;
+            --text: #333;
+            --text-light: #666;
             --border: #e1e8ed;
         }
 
@@ -53,245 +53,200 @@
             z-index: 100;
         }
 
-        .logo-section {
+        .header-left {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 20px;
         }
 
         .logo {
-            font-size: 2.5em;
-        }
-
-        .logo-text h2 {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: var(--accent);
             font-family: 'Crimson Pro', serif;
-            font-size: 1.5em;
-            color: var(--primary);
         }
 
-        .logo-text p {
-            font-size: 0.85em;
-            color: var(--text-light);
-        }
-
-        .user-section {
+        .header-right {
             display: flex;
             align-items: center;
             gap: 20px;
         }
 
         .user-info {
-            text-align: right;
+            display: flex;
+            align-items: center;
+            gap: 15px;
         }
 
-        .user-info h3 {
+        .user-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 1.1em;
+        }
+
+        .user-details h3 {
             font-size: 0.95em;
+            font-weight: 600;
             color: var(--text);
-            margin-bottom: 3px;
         }
 
-        .user-info p {
+        .user-details p {
             font-size: 0.85em;
             color: var(--text-light);
         }
 
-        .user-avatar {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--accent) 0%, var(--light-accent) 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--white);
-            font-weight: 600;
-            font-size: 1.3em;
-        }
-
-        .btn-logout {
-            padding: 10px 20px;
-            background: transparent;
-            border: 2px solid var(--border);
+        .btn {
+            padding: 10px 25px;
+            border: none;
             border-radius: 10px;
-            cursor: pointer;
             font-family: 'Outfit', sans-serif;
-            font-size: 0.9em;
             font-weight: 600;
-            color: var(--text);
+            cursor: pointer;
             transition: all 0.3s ease;
+            font-size: 0.95em;
         }
 
-        .btn-logout:hover {
-            border-color: var(--danger);
-            color: var(--danger);
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #b71c1c;
             transform: translateY(-2px);
         }
 
         /* Main Container */
-        .container {
-            max-width: 1600px;
+        .main-container {
+            max-width: 1400px;
             margin: 0 auto;
-            padding: 40px;
+            padding: 40px 20px;
         }
 
-        /* Welcome Card */
-        .welcome-card {
-            background: linear-gradient(135deg, var(--accent) 0%, var(--light-accent) 100%);
-            color: var(--white);
-            padding: 50px;
-            border-radius: 20px;
-            margin-bottom: 40px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .welcome-card::before {
-            content: '👨‍🏫';
-            position: absolute;
-            font-size: 12em;
-            opacity: 0.1;
-            top: 50%;
-            right: 50px;
-            transform: translateY(-50%);
-        }
-
-        .welcome-card h1 {
-            font-family: 'Crimson Pro', serif;
-            font-size: 2.5em;
-            margin-bottom: 15px;
-            position: relative;
-            z-index: 1;
-        }
-
-        .welcome-card p {
-            font-size: 1.2em;
-            opacity: 0.95;
-            position: relative;
-            z-index: 1;
-        }
-
-        /* Stats Cards */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 25px;
-            margin-bottom: 40px;
-        }
-
-        .stat-card {
+        /* Tabs Navigation */
+        .tabs-nav {
             background: var(--white);
-            padding: 30px;
             border-radius: 16px;
+            padding: 10px;
+            margin-bottom: 30px;
+            display: flex;
+            gap: 10px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            transition: all 0.3s ease;
+            overflow-x: auto;
         }
 
-        .stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-        }
-
-        .stat-icon {
-            font-size: 2.5em;
-            margin-bottom: 15px;
-        }
-
-        .stat-value {
-            font-size: 2.5em;
-            font-weight: 700;
-            color: var(--primary);
-            margin-bottom: 5px;
-        }
-
-        .stat-label {
-            font-size: 0.95em;
+        .tab-btn {
+            padding: 15px 30px;
+            border: none;
+            background: transparent;
             color: var(--text-light);
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Outfit', sans-serif;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
-        /* Main Content Card */
+        .tab-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .tab-btn:not(.active):hover {
+            background: var(--bg);
+        }
+
+        /* Tab Content */
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Students Section */
         .content-card {
             background: var(--white);
-            border-radius: 20px;
+            border-radius: 16px;
+            padding: 30px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            overflow: hidden;
         }
 
-        .content-header {
-            padding: 30px;
-            border-bottom: 2px solid var(--border);
+        .section-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            flex-wrap: wrap;
-            gap: 20px;
+            margin-bottom: 30px;
         }
 
-        .content-title {
+        .section-header h2 {
             font-family: 'Crimson Pro', serif;
             font-size: 2em;
             color: var(--primary);
         }
 
-        .export-buttons {
+        .btn-group {
             display: flex;
             gap: 10px;
         }
 
-        .btn {
-            padding: 12px 24px;
-            border: none;
-            border-radius: 10px;
-            font-size: 0.95em;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-family: 'Outfit', sans-serif;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
         .btn-primary {
-            background: linear-gradient(135deg, var(--accent) 0%, var(--light-accent) 100%);
-            color: var(--white);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
         }
 
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(15, 76, 117, 0.3);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
         }
 
         .btn-success {
             background: var(--success);
-            color: var(--white);
+            color: white;
         }
 
         .btn-success:hover {
+            background: #00a383;
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 184, 148, 0.3);
         }
 
-        /* Filters Section */
+        /* Filters */
         .filters-section {
-            padding: 30px;
             background: var(--bg);
-            border-bottom: 2px solid var(--border);
-        }
-
-        .filters-title {
-            font-size: 1.2em;
-            font-weight: 600;
-            margin-bottom: 20px;
-            color: var(--primary);
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 30px;
         }
 
         .filters-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
+            gap: 15px;
+            margin-bottom: 15px;
         }
 
         .filter-group {
@@ -302,85 +257,56 @@
         .filter-group label {
             font-size: 0.9em;
             font-weight: 600;
+            margin-bottom: 5px;
             color: var(--text);
-            margin-bottom: 8px;
         }
 
         .filter-group input,
         .filter-group select {
-            padding: 12px;
+            padding: 10px;
             border: 2px solid var(--border);
-            border-radius: 10px;
+            border-radius: 8px;
             font-family: 'Outfit', sans-serif;
-            font-size: 0.95em;
             transition: all 0.3s ease;
         }
 
         .filter-group input:focus,
         .filter-group select:focus {
             outline: none;
-            border-color: var(--light-accent);
-            box-shadow: 0 0 0 3px rgba(50, 130, 184, 0.1);
+            border-color: var(--accent);
         }
 
-        .filter-actions {
-            display: flex;
-            gap: 10px;
-            align-items: flex-end;
-        }
-
-        .btn-filter {
-            background: var(--light-accent);
-            color: var(--white);
-        }
-
-        .btn-reset {
-            background: var(--text-light);
-            color: var(--white);
-        }
-
-        /* Table Section */
+        /* Table */
         .table-container {
-            padding: 30px;
             overflow-x: auto;
         }
 
-        .students-table {
+        table {
             width: 100%;
             border-collapse: collapse;
         }
 
-        .students-table thead {
+        th {
             background: var(--bg);
-        }
-
-        .students-table th {
             padding: 15px;
             text-align: left;
             font-weight: 600;
             color: var(--text);
-            font-size: 0.9em;
             border-bottom: 2px solid var(--border);
         }
 
-        .students-table td {
+        td {
             padding: 15px;
             border-bottom: 1px solid var(--border);
-            font-size: 0.95em;
         }
 
-        .students-table tbody tr {
-            transition: all 0.3s ease;
-        }
-
-        .students-table tbody tr:hover {
-            background: rgba(50, 130, 184, 0.05);
+        tr:hover {
+            background: #f9fafb;
         }
 
         .badge {
-            display: inline-block;
             padding: 5px 12px;
-            border-radius: 20px;
+            border-radius: 6px;
             font-size: 0.85em;
             font-weight: 600;
         }
@@ -396,14 +322,218 @@
         }
 
         .badge-low {
-            background: #d1ecf1;
-            color: #0c5460;
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        /* Blog Section */
+        .blog-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .posts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+        }
+
+        .post-card {
+            background: var(--white);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+        }
+
+        .post-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .post-image {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4em;
+        }
+
+        .post-content {
+            padding: 25px;
+        }
+
+        .post-meta {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            font-size: 0.85em;
+            color: var(--text-light);
+        }
+
+        .post-title {
+            font-size: 1.3em;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: var(--primary);
+        }
+
+        .post-excerpt {
+            color: var(--text-light);
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .post-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-sm {
+            padding: 8px 15px;
+            font-size: 0.85em;
+        }
+
+        .btn-secondary {
+            background: var(--border);
+            color: var(--text);
+        }
+
+        .btn-secondary:hover {
+            background: #d1d8dd;
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: var(--white);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+
+        .stat-icon {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+
+        .stat-value {
+            font-size: 2.5em;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: var(--text-light);
+            font-size: 0.95em;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: slideUp 0.3s ease-out;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .modal-header h3 {
+            font-family: 'Crimson Pro', serif;
+            font-size: 1.8em;
+            color: var(--primary);
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 2em;
+            cursor: pointer;
+            color: var(--text-light);
+            transition: all 0.3s ease;
+        }
+
+        .close-modal:hover {
+            color: var(--danger);
+            transform: rotate(90deg);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text);
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.95em;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
         }
 
         .empty-state {
             text-align: center;
-            padding: 80px 20px;
-            color: var(--text-light);
+            padding: 60px 40px;
         }
 
         .empty-state-icon {
@@ -412,102 +542,56 @@
             opacity: 0.5;
         }
 
+        .empty-state h3 {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+            color: var(--text);
+        }
+
         .empty-state p {
-            font-size: 1.1em;
+            color: var(--text-light);
+            margin-bottom: 25px;
         }
 
-        /* Loading Spinner */
-        .loading {
-            display: none;
-            text-align: center;
-            padding: 40px;
-        }
-
-        .spinner {
-            border: 4px solid var(--border);
-            border-top: 4px solid var(--light-accent);
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         /* Responsive */
-        @media (max-width: 968px) {
-            .container {
+        @media (max-width: 768px) {
+            .app-header {
+                flex-direction: column;
+                gap: 20px;
                 padding: 20px;
             }
 
-            .app-header {
-                padding: 15px 20px;
-                flex-direction: column;
-                gap: 15px;
-            }
-
-            .user-section {
-                width: 100%;
-                justify-content: space-between;
-            }
-
-            .welcome-card {
-                padding: 30px 20px;
-            }
-
-            .welcome-card h1 {
-                font-size: 1.8em;
-            }
-
-            .content-header {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-            .export-buttons {
-                width: 100%;
-                flex-direction: column;
-            }
-
-            .btn {
-                width: 100%;
-                justify-content: center;
+            .posts-grid {
+                grid-template-columns: 1fr;
             }
 
             .filters-grid {
                 grid-template-columns: 1fr;
             }
 
-            .table-container {
-                padding: 15px;
-            }
-
-            .students-table {
-                font-size: 0.85em;
-            }
-
-            .students-table th,
-            .students-table td {
-                padding: 10px 8px;
-            }
-        }
-
-        @media (max-width: 576px) {
             .stats-grid {
                 grid-template-columns: 1fr;
             }
 
-            .logo-section {
+            .section-header {
                 flex-direction: column;
-                gap: 10px;
+                gap: 15px;
             }
 
-            .user-info {
-                text-align: left;
+            .btn-group {
+                width: 100%;
+                flex-direction: column;
             }
         }
     </style>
@@ -515,325 +599,263 @@
 <body>
     <!-- Header -->
     <header class="app-header">
-        <div class="logo-section">
-            <div class="logo">🎓</div>
-            <div class="logo-text">
-                <h2>EduConnect</h2>
-                <p>Dashboard Docente</p>
-            </div>
+        <div class="header-left">
+            <div class="logo">🎓 EduConnect</div>
         </div>
-
-        <div class="user-section">
+        <div class="header-right">
             <div class="user-info">
-                <h3 id="teacherName">Profesor Juan Pérez</h3>
-                <p id="institutionName">Instituto Educativo Nacional</p>
+                <div class="user-avatar" id="userAvatar">D</div>
+                <div class="user-details">
+                    <h3 id="teacherName">Docente</h3>
+                    <p id="institutionName">Institución</p>
+                </div>
             </div>
-            <div class="user-avatar" id="userAvatar">JP</div>
-            <button class="btn-logout" onclick="logout()">Cerrar Sesión</button>
+            <button class="btn btn-danger" onclick="logout()">Cerrar Sesión</button>
         </div>
     </header>
 
     <!-- Main Container -->
-    <div class="container">
-        <!-- Welcome Card -->
-        <div class="welcome-card">
-            <h1>¡Bienvenido de nuevo!</h1>
-            <p>Gestiona la información de tus estudiantes y genera reportes personalizados</p>
+    <div class="main-container">
+        <!-- Tabs Navigation -->
+        <div class="tabs-nav">
+            <button class="tab-btn active" onclick="showTab('students')">
+                <span>👥</span>
+                <span>Egresados</span>
+            </button>
+            <button class="tab-btn" onclick="showTab('blog')">
+                <span>📰</span>
+                <span>Blog / Noticias</span>
+            </button>
         </div>
 
-        <!-- Stats Grid -->
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-icon">👥</div>
-                <div class="stat-value" id="totalStudents">0</div>
-                <div class="stat-label">Total Estudiantes</div>
+        <!-- Students Tab -->
+        <div id="students" class="tab-content active">
+            <!-- Stats -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">👥</div>
+                    <div class="stat-value" id="totalStudents">0</div>
+                    <div class="stat-label">Total Egresados</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🟢</div>
+                    <div class="stat-value" id="highAvailability">0</div>
+                    <div class="stat-label">Alta Disponibilidad</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🟡</div>
+                    <div class="stat-value" id="mediumAvailability">0</div>
+                    <div class="stat-label">Media Disponibilidad</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">📅</div>
+                    <div class="stat-value" id="currentYear">2026</div>
+                    <div class="stat-label">Año Actual</div>
+                </div>
             </div>
 
-            <div class="stat-card">
-                <div class="stat-icon">✅</div>
-                <div class="stat-value" id="highAvailability">0</div>
-                <div class="stat-label">Alta Disponibilidad</div>
-            </div>
+            <!-- Content Card -->
+            <div class="content-card">
+                <div class="section-header">
+                    <h2>Lista de Egresados</h2>
+                    <div class="btn-group">
+                        <button class="btn btn-success" onclick="exportToExcel()">📊 Exportar Excel</button>
+                        <button class="btn btn-primary" onclick="exportToPDF()">📄 Exportar PDF</button>
+                    </div>
+                </div>
 
-            <div class="stat-card">
-                <div class="stat-icon">⚠️</div>
-                <div class="stat-value" id="mediumAvailability">0</div>
-                <div class="stat-label">Media Disponibilidad</div>
-            </div>
+                <!-- Filters -->
+                <div class="filters-section">
+                    <div class="filters-grid">
+                        <div class="filter-group">
+                            <label>Nombre</label>
+                            <input type="text" id="filterName" placeholder="Buscar por nombre..." onkeyup="applyFilters()">
+                        </div>
+                        <div class="filter-group">
+                            <label>Año Graduación</label>
+                            <input type="number" id="filterYear" placeholder="2020" onchange="applyFilters()">
+                        </div>
+                        <div class="filter-group">
+                            <label>Email</label>
+                            <input type="text" id="filterEmail" placeholder="Buscar por email..." onkeyup="applyFilters()">
+                        </div>
+                        <div class="filter-group">
+                            <label>Disponibilidad</label>
+                            <select id="filterAvailability" onchange="applyFilters()">
+                                <option value="">Todas</option>
+                                <option value="alta">Alta</option>
+                                <option value="media">Media</option>
+                                <option value="baja">Baja</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>Carrera</label>
+                            <input type="text" id="filterCareer" placeholder="Buscar carrera..." onkeyup="applyFilters()">
+                        </div>
+                    </div>
+                    <button class="btn btn-secondary" onclick="resetFilters()">Limpiar Filtros</button>
+                </div>
 
-            <div class="stat-card">
-                <div class="stat-icon">🎓</div>
-                <div class="stat-value" id="currentYear">2026</div>
-                <div class="stat-label">Año Actual</div>
+                <!-- Table -->
+                <div class="table-container">
+                    <table id="studentsTable">
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Email</th>
+                                <th>Teléfono</th>
+                                <th>Año</th>
+                                <th>Carrera</th>
+                                <th>Ocupación</th>
+                                <th>Disponibilidad</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="studentsTableBody">
+                        </tbody>
+                    </table>
+                </div>
+
+                <div id="emptyState" class="empty-state" style="display: none;">
+                    <div class="empty-state-icon">📚</div>
+                    <h3>No hay egresados registrados</h3>
+                    <p>Aún no hay egresados en tu institución</p>
+                </div>
             </div>
         </div>
 
-        <!-- Main Content -->
-        <div class="content-card">
-            <!-- Header -->
-            <div class="content-header">
-                <h2 class="content-title">Listado de Estudiantes</h2>
-                <div class="export-buttons">
-                    <button class="btn btn-success" onclick="exportToExcel()">
-                        <span>📊</span>
-                        <span>Exportar a Excel</span>
-                    </button>
-                    <button class="btn btn-primary" onclick="exportToPDF()">
-                        <span>📄</span>
-                        <span>Exportar a PDF</span>
-                    </button>
-                </div>
+        <!-- Blog Tab -->
+        <div id="blog" class="tab-content">
+            <div class="blog-header">
+                <h2 style="font-family: 'Crimson Pro', serif; font-size: 2em; color: var(--primary);">Blog / Noticias</h2>
+                <button class="btn btn-success" onclick="openPostModal()">+ Nueva Publicación</button>
             </div>
 
-            <!-- Filters -->
-            <div class="filters-section">
-                <div class="filters-title">
-                    <span>🔍</span>
-                    <span>Filtros de Búsqueda</span>
-                </div>
-                <div class="filters-grid">
-                    <div class="filter-group">
-                        <label>Buscar por Nombre</label>
-                        <input type="text" id="filterName" placeholder="Nombre del estudiante...">
-                    </div>
-
-                    <div class="filter-group">
-                        <label>Año de Graduación</label>
-                        <input type="number" id="filterYear" placeholder="Ej: 2020" min="1950" max="2030">
-                    </div>
-
-                    <div class="filter-group">
-                        <label>Email</label>
-                        <input type="email" id="filterEmail" placeholder="correo@ejemplo.com">
-                    </div>
-
-                    <div class="filter-group">
-                        <label>Disponibilidad</label>
-                        <select id="filterAvailability">
-                            <option value="">Todas</option>
-                            <option value="alta">Alta</option>
-                            <option value="media">Media</option>
-                            <option value="baja">Baja</option>
-                        </select>
-                    </div>
-
-                    <div class="filter-group">
-                        <label>Carrera</label>
-                        <input type="text" id="filterCareer" placeholder="Carrera o especialidad...">
-                    </div>
-
-                    <div class="filter-actions">
-                        <button class="btn btn-filter" onclick="applyFilters()">
-                            <span>🔍 Filtrar</span>
-                        </button>
-                        <button class="btn btn-reset" onclick="resetFilters()">
-                            <span>🔄 Limpiar</span>
-                        </button>
-                    </div>
-                </div>
+            <div class="posts-grid" id="postsGrid">
+                <!-- Posts will be loaded here -->
             </div>
 
-            <!-- Table -->
-            <div class="table-container">
-                <div class="loading" id="loading">
-                    <div class="spinner"></div>
-                    <p style="margin-top: 20px; color: var(--text-light);">Cargando datos...</p>
-                </div>
-
-                <table class="students-table" id="studentsTable">
-                    <thead>
-                        <tr>
-                            <th>Nombre</th>
-                            <th>Email</th>
-                            <th>Teléfono</th>
-                            <th>Año Graduación</th>
-                            <th>Carrera</th>
-                            <th>Ocupación Actual</th>
-                            <th>Disponibilidad</th>
-                        </tr>
-                    </thead>
-                    <tbody id="studentsTableBody">
-                        <!-- Data will be inserted here -->
-                    </tbody>
-                </table>
-
-                <div class="empty-state" id="emptyState" style="display: none;">
-                    <div class="empty-state-icon">📭</div>
-                    <p>No se encontraron estudiantes con los filtros aplicados</p>
-                </div>
+            <div id="emptyBlog" class="empty-state" style="display: none;">
+                <div class="empty-state-icon">📰</div>
+                <h3>No hay publicaciones aún</h3>
+                <p>Comparte noticias con la comunidad educativa</p>
+                <button class="btn btn-success" onclick="openPostModal()">Crear Primera Publicación</button>
             </div>
         </div>
     </div>
 
+    <!-- Post Modal -->
+    <div id="postModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Nueva Publicación</h3>
+                <button class="close-modal" onclick="closePostModal()">×</button>
+            </div>
+            <form id="postForm">
+                <div class="form-group">
+                    <label>Título *</label>
+                    <input type="text" id="postTitle" required>
+                </div>
+                <div class="form-group">
+                    <label>Categoría *</label>
+                    <select id="postCategory" required>
+                        <option value="">Seleccione...</option>
+                        <option value="noticia">Noticia</option>
+                        <option value="evento">Evento</option>
+                        <option value="logro">Logro Institucional</option>
+                        <option value="oportunidad">Oportunidad Laboral</option>
+                        <option value="general">General</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Contenido *</label>
+                    <textarea id="postContent" rows="6" required></textarea>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">Publicar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
-        // Datos de demostración
-        let studentsData = [
-            {
-                name: "María González García",
-                email: "maria.gonzalez@email.com",
-                phone: "300-123-4567",
-                graduationYear: 2020,
-                career: "Ingeniería de Sistemas",
-                occupation: "Desarrolladora Senior",
-                availability: "alta"
-            },
-            {
-                name: "Carlos Rodríguez López",
-                email: "carlos.rodriguez@email.com",
-                phone: "301-234-5678",
-                graduationYear: 2019,
-                career: "Administración de Empresas",
-                occupation: "Gerente de Ventas",
-                availability: "media"
-            },
-            {
-                name: "Ana Martínez Pérez",
-                email: "ana.martinez@email.com",
-                phone: "302-345-6789",
-                graduationYear: 2021,
-                career: "Diseño Gráfico",
-                occupation: "Freelancer",
-                availability: "alta"
-            },
-            {
-                name: "Luis Fernando Silva",
-                email: "luis.silva@email.com",
-                phone: "303-456-7890",
-                graduationYear: 2018,
-                career: "Contaduría Pública",
-                occupation: "Contador Senior",
-                availability: "baja"
-            },
-            {
-                name: "Patricia Ramírez Torres",
-                email: "patricia.ramirez@email.com",
-                phone: "304-567-8901",
-                graduationYear: 2022,
-                career: "Marketing Digital",
-                occupation: "Social Media Manager",
-                availability: "alta"
-            },
-            {
-                name: "Jorge Alberto Díaz",
-                email: "jorge.diaz@email.com",
-                phone: "305-678-9012",
-                graduationYear: 2020,
-                career: "Ingeniería Industrial",
-                occupation: "Ingeniero de Procesos",
-                availability: "media"
-            },
-            {
-                name: "Sandra Milena Castro",
-                email: "sandra.castro@email.com",
-                phone: "306-789-0123",
-                graduationYear: 2019,
-                career: "Psicología",
-                occupation: "Psicóloga Clínica",
-                availability: "alta"
-            },
-            {
-                name: "Andrés Felipe Morales",
-                email: "andres.morales@email.com",
-                phone: "307-890-1234",
-                graduationYear: 2021,
-                career: "Arquitectura",
-                occupation: "Arquitecto Junior",
-                availability: "media"
-            },
-            {
-                name: "Diana Carolina Suárez",
-                email: "diana.suarez@email.com",
-                phone: "308-901-2345",
-                graduationYear: 2020,
-                career: "Derecho",
-                occupation: "Abogada",
-                availability: "baja"
-            },
-            {
-                name: "Miguel Ángel Vargas",
-                email: "miguel.vargas@email.com",
-                phone: "309-012-3456",
-                graduationYear: 2022,
-                career: "Medicina",
-                occupation: "Médico General",
-                availability: "alta"
-            }
-        ];
+        let appData = {
+            institutions: [],
+            teachers: [],
+            students: [],
+            posts: [],
+            achievements: [],
+            currentUser: null
+        };
 
-        let filteredData = [...studentsData];
+        let studentsData = [];
+        let filteredData = [];
+        let currentTeacher = null;
 
-        // Inicializar
-        function init() {
-            loadUserData();
-            updateStats();
-            renderTable(studentsData);
-        }
-
-        // Cargar datos del usuario
-        function loadUserData() {
-            const savedData = localStorage.getItem('eduConnectData');
-            if (savedData) {
-                const data = JSON.parse(savedData);
+        // Load data
+        function loadData() {
+            const saved = localStorage.getItem('eduConnectData');
+            if (saved) {
+                appData = JSON.parse(saved);
                 
-                // Verificar que hay un usuario logueado y es docente
-                if (!data.currentUser || data.currentUser.type !== 'teacher') {
-                    // Redirigir al login si no es docente
+                // Verificar que hay usuario logueado y es docente
+                if (!appData.currentUser || appData.currentUser.type !== 'teacher') {
                     window.location.href = 'educonnect-auth.html';
                     return;
                 }
                 
-                // Cargar datos del docente
-                document.getElementById('teacherName').textContent = data.currentUser.name;
-                const institution = data.institutions.find(i => i.id === data.currentUser.institutionId);
-                if (institution) {
-                    document.getElementById('institutionName').textContent = institution.name;
-                }
-                const initials = data.currentUser.name.split(' ').map(n => n[0]).join('').toUpperCase();
-                document.getElementById('userAvatar').textContent = initials;
-
-                // Usar estudiantes reales si existen
-                if (data.students && data.students.length > 0) {
-                    studentsData = data.students.map(s => {
-                        const inst = data.institutions.find(i => i.id === s.institutionId);
-                        return {
-                            name: s.name,
-                            email: s.email,
-                            phone: s.phone || 'N/A',
-                            graduationYear: s.graduationYear || 'N/A',
-                            career: s.career || 'N/A',
-                            occupation: s.occupation || 'N/A',
-                            availability: s.availability || 'media'
-                        };
-                    });
-                    filteredData = [...studentsData];
-                    renderTable(studentsData);
-                    updateStats();
+                currentTeacher = appData.teachers.find(t => t.id === appData.currentUser.id);
+                if (currentTeacher) {
+                    loadUserInfo();
+                    loadStudents();
+                    loadPosts();
                 }
             } else {
-                // No hay datos guardados, redirigir al login
                 window.location.href = 'educonnect-auth.html';
             }
         }
 
-        // Actualizar estadísticas
-        function updateStats() {
-            const total = studentsData.length;
-            const high = studentsData.filter(s => s.availability === 'alta').length;
-            const medium = studentsData.filter(s => s.availability === 'media').length;
-
-            document.getElementById('totalStudents').textContent = total;
-            document.getElementById('highAvailability').textContent = high;
-            document.getElementById('mediumAvailability').textContent = medium;
-            document.getElementById('currentYear').textContent = new Date().getFullYear();
+        // Load user info
+        function loadUserInfo() {
+            document.getElementById('teacherName').textContent = currentTeacher.name;
+            const inst = appData.institutions.find(i => i.id === currentTeacher.institutionId);
+            if (inst) {
+                document.getElementById('institutionName').textContent = inst.name;
+            }
+            const initials = currentTeacher.name.split(' ').map(n => n[0]).join('').toUpperCase();
+            document.getElementById('userAvatar').textContent = initials;
         }
 
-        // Renderizar tabla
-        function renderTable(data) {
+        // Load students
+        function loadStudents() {
+            if (!appData.students) appData.students = [];
+            
+            // FILTRAR: Solo estudiantes de la misma institución del docente
+            studentsData = appData.students
+                .filter(s => s.institutionId === currentTeacher.institutionId)
+                .map(s => ({
+                    id: s.id,
+                    name: s.name,
+                    email: s.email,
+                    phone: s.phone || 'N/A',
+                    graduationYear: s.graduationYear || 'N/A',
+                    career: s.career || 'N/A',
+                    occupation: s.occupation || 'N/A',
+                    availability: s.availability || 'media'
+                }));
+            
+            filteredData = [...studentsData];
+            renderTable();
+            updateStats();
+        }
+
+        // Render table
+        function renderTable() {
             const tbody = document.getElementById('studentsTableBody');
             const emptyState = document.getElementById('emptyState');
             const table = document.getElementById('studentsTable');
 
-            if (data.length === 0) {
+            if (filteredData.length === 0) {
                 table.style.display = 'none';
                 emptyState.style.display = 'block';
                 return;
@@ -842,7 +864,7 @@
             table.style.display = 'table';
             emptyState.style.display = 'none';
 
-            tbody.innerHTML = data.map(student => `
+            tbody.innerHTML = filteredData.map(student => `
                 <tr>
                     <td><strong>${student.name}</strong></td>
                     <td>${student.email}</td>
@@ -855,11 +877,49 @@
                             ${student.availability.charAt(0).toUpperCase() + student.availability.slice(1)}
                         </span>
                     </td>
+                    <td>
+                        <button class="btn btn-danger btn-sm" onclick="deleteStudent(${student.id})">Eliminar</button>
+                    </td>
                 </tr>
             `).join('');
         }
 
-        // Aplicar filtros
+        // Delete student
+        function deleteStudent(studentId) {
+            if (confirm('¿Estás seguro de eliminar este egresado? Esta acción no se puede deshacer.')) {
+                // Eliminar del array principal
+                appData.students = appData.students.filter(s => s.id !== studentId);
+                
+                // Eliminar publicaciones del estudiante
+                if (appData.posts) {
+                    appData.posts = appData.posts.filter(p => p.authorId !== studentId);
+                }
+                
+                // Eliminar logros del estudiante
+                if (appData.achievements) {
+                    appData.achievements = appData.achievements.filter(a => a.studentId !== studentId);
+                }
+                
+                saveData();
+                loadStudents();
+                loadPosts();
+                alert('✅ Egresado eliminado exitosamente');
+            }
+        }
+
+        // Update stats
+        function updateStats() {
+            const total = studentsData.length;
+            const high = studentsData.filter(s => s.availability === 'alta').length;
+            const medium = studentsData.filter(s => s.availability === 'media').length;
+
+            document.getElementById('totalStudents').textContent = total;
+            document.getElementById('highAvailability').textContent = high;
+            document.getElementById('mediumAvailability').textContent = medium;
+            document.getElementById('currentYear').textContent = new Date().getFullYear();
+        }
+
+        // Apply filters
         function applyFilters() {
             const nameFilter = document.getElementById('filterName').value.toLowerCase();
             const yearFilter = document.getElementById('filterYear').value;
@@ -877,10 +937,10 @@
                 return matchName && matchYear && matchEmail && matchAvailability && matchCareer;
             });
 
-            renderTable(filteredData);
+            renderTable();
         }
 
-        // Limpiar filtros
+        // Reset filters
         function resetFilters() {
             document.getElementById('filterName').value = '';
             document.getElementById('filterYear').value = '';
@@ -889,10 +949,10 @@
             document.getElementById('filterCareer').value = '';
 
             filteredData = [...studentsData];
-            renderTable(filteredData);
+            renderTable();
         }
 
-        // Exportar a Excel
+        // Export to Excel
         function exportToExcel() {
             const data = filteredData.map(s => ({
                 'Nombre': s.name,
@@ -906,128 +966,168 @@
 
             const ws = XLSX.utils.json_to_sheet(data);
             
-            // Ajustar ancho de columnas
             const wscols = [
-                {wch: 30}, // Nombre
-                {wch: 30}, // Email
-                {wch: 15}, // Teléfono
-                {wch: 15}, // Año
-                {wch: 25}, // Carrera
-                {wch: 25}, // Ocupación
-                {wch: 15}  // Disponibilidad
+                {wch: 25}, {wch: 30}, {wch: 15}, 
+                {wch: 15}, {wch: 25}, {wch: 25}, {wch: 15}
             ];
             ws['!cols'] = wscols;
 
             const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, 'Estudiantes');
+            XLSX.utils.book_append_sheet(wb, ws, 'Egresados');
 
-            const filename = `estudiantes_${new Date().toISOString().split('T')[0]}.xlsx`;
+            const inst = appData.institutions.find(i => i.id === currentTeacher.institutionId);
+            const filename = `Egresados_${inst ? inst.name.replace(/ /g, '_') : 'Institucion'}_${new Date().toISOString().split('T')[0]}.xlsx`;
+            
             XLSX.writeFile(wb, filename);
         }
 
-        // Exportar a PDF
+        // Export to PDF
         function exportToPDF() {
             const { jsPDF } = window.jspdf;
-            const doc = new jsPDF('l', 'mm', 'a4'); // landscape
+            const doc = new jsPDF();
 
-            // Título
+            const inst = appData.institutions.find(i => i.id === currentTeacher.institutionId);
+            
             doc.setFontSize(18);
-            doc.setTextColor(26, 26, 46);
-            doc.text('Listado de Estudiantes - EduConnect', 14, 20);
-
-            // Fecha
+            doc.text(`Reporte de Egresados`, 14, 20);
+            doc.setFontSize(12);
+            doc.text(`${inst ? inst.name : 'Institución'}`, 14, 28);
             doc.setFontSize(10);
-            doc.setTextColor(102, 102, 102);
-            doc.text(`Generado el: ${new Date().toLocaleDateString('es-ES')}`, 14, 28);
+            doc.text(`Fecha: ${new Date().toLocaleDateString()}`, 14, 35);
 
-            // Institución
-            const institutionName = document.getElementById('institutionName').textContent;
-            doc.text(`Institución: ${institutionName}`, 14, 34);
-
-            // Tabla
             const tableData = filteredData.map(s => [
                 s.name,
                 s.email,
                 s.phone,
-                s.graduationYear.toString(),
+                s.graduationYear,
                 s.career,
                 s.occupation,
                 s.availability.charAt(0).toUpperCase() + s.availability.slice(1)
             ]);
 
             doc.autoTable({
+                startY: 40,
                 head: [['Nombre', 'Email', 'Teléfono', 'Año', 'Carrera', 'Ocupación', 'Disponibilidad']],
                 body: tableData,
-                startY: 40,
-                theme: 'grid',
-                headStyles: {
-                    fillColor: [15, 76, 117],
-                    textColor: [255, 255, 255],
-                    fontSize: 9,
-                    fontStyle: 'bold'
-                },
-                bodyStyles: {
-                    fontSize: 8
-                },
-                alternateRowStyles: {
-                    fillColor: [245, 247, 250]
-                },
-                columnStyles: {
-                    0: { cellWidth: 45 },
-                    1: { cellWidth: 45 },
-                    2: { cellWidth: 30 },
-                    3: { cellWidth: 20 },
-                    4: { cellWidth: 40 },
-                    5: { cellWidth: 40 },
-                    6: { cellWidth: 25 }
-                }
+                styles: { fontSize: 8 },
+                headStyles: { fillColor: [15, 76, 117] }
             });
 
-            // Footer
-            const pageCount = doc.internal.getNumberOfPages();
-            for (let i = 1; i <= pageCount; i++) {
-                doc.setPage(i);
-                doc.setFontSize(8);
-                doc.setTextColor(150);
-                doc.text(
-                    `Página ${i} de ${pageCount}`,
-                    doc.internal.pageSize.getWidth() / 2,
-                    doc.internal.pageSize.getHeight() - 10,
-                    { align: 'center' }
-                );
-            }
-
-            const filename = `estudiantes_${new Date().toISOString().split('T')[0]}.pdf`;
+            const filename = `Egresados_${inst ? inst.name.replace(/ /g, '_') : 'Institucion'}_${new Date().toISOString().split('T')[0]}.pdf`;
             doc.save(filename);
+        }
+
+        // Load posts
+        function loadPosts() {
+            const postsGrid = document.getElementById('postsGrid');
+            const emptyBlog = document.getElementById('emptyBlog');
+            
+            if (!appData.posts) appData.posts = [];
+            
+            if (appData.posts.length === 0) {
+                postsGrid.innerHTML = '';
+                emptyBlog.style.display = 'block';
+                return;
+            }
+            
+            emptyBlog.style.display = 'none';
+            postsGrid.innerHTML = appData.posts.map(post => `
+                <div class="post-card">
+                    <div class="post-image">📰</div>
+                    <div class="post-content">
+                        <div class="post-meta">
+                            <span>👤 ${post.authorName}</span>
+                            <span>📅 ${new Date(post.createdAt).toLocaleDateString()}</span>
+                        </div>
+                        <div class="post-title">${post.title}</div>
+                        <div class="post-excerpt">${post.content.substring(0, 150)}${post.content.length > 150 ? '...' : ''}</div>
+                        <div class="post-actions">
+                            <span style="background: #e3f2fd; color: #1976d2; padding: 5px 12px; border-radius: 6px; font-size: 0.85em; font-weight: 600;">
+                                ${post.category}
+                            </span>
+                            ${post.authorId === currentTeacher.id ? `
+                                <button class="btn btn-secondary btn-sm" onclick="deletePost(${post.id})">Eliminar</button>
+                            ` : ''}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Open post modal
+        function openPostModal() {
+            document.getElementById('postModal').classList.add('active');
+            document.getElementById('postForm').reset();
+        }
+
+        // Close post modal
+        function closePostModal() {
+            document.getElementById('postModal').classList.remove('active');
+        }
+
+        // Create post
+        document.getElementById('postForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const post = {
+                id: Date.now(),
+                authorId: currentTeacher.id,
+                authorName: currentTeacher.name,
+                authorType: 'teacher',
+                title: document.getElementById('postTitle').value,
+                category: document.getElementById('postCategory').value,
+                content: document.getElementById('postContent').value,
+                createdAt: new Date().toISOString()
+            };
+            
+            if (!appData.posts) appData.posts = [];
+            appData.posts.unshift(post);
+            
+            saveData();
+            loadPosts();
+            closePostModal();
+            alert('✅ Publicación creada exitosamente');
+        });
+
+        // Delete post
+        function deletePost(postId) {
+            if (confirm('¿Estás seguro de eliminar esta publicación?')) {
+                appData.posts = appData.posts.filter(p => p.id !== postId);
+                saveData();
+                loadPosts();
+            }
+        }
+
+        // Save data
+        function saveData() {
+            localStorage.setItem('eduConnectData', JSON.stringify(appData));
+        }
+
+        // Show tab
+        function showTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            document.getElementById(tabName).classList.add('active');
+            event.target.closest('.tab-btn').classList.add('active');
         }
 
         // Logout
         function logout() {
             if (confirm('¿Estás seguro de cerrar sesión?')) {
-                // Limpiar el usuario actual del localStorage
-                const savedData = localStorage.getItem('eduConnectData');
-                if (savedData) {
-                    const data = JSON.parse(savedData);
-                    data.currentUser = null;
-                    localStorage.setItem('eduConnectData', JSON.stringify(data));
-                }
-                
-                // Redirigir al login
+                appData.currentUser = null;
+                saveData();
                 window.location.href = 'educonnect-auth.html';
             }
         }
 
-        // Aplicar filtros al presionar Enter
-        document.querySelectorAll('.filter-group input, .filter-group select').forEach(element => {
-            element.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    applyFilters();
-                }
-            });
-        });
-
-        // Inicializar al cargar
-        init();
+        // Initialize
+        loadData();
     </script>
 </body>
 </html>
