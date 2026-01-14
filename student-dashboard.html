@@ -741,6 +741,41 @@
                     <label>Contenido *</label>
                     <textarea id="postContent" rows="6" required style="resize: vertical;"></textarea>
                 </div>
+                
+                <!-- Sección de Multimedia -->
+                <div class="form-group">
+                    <label>📎 Archivos Multimedia (Opcional)</label>
+                    <div style="background: #f5f7fa; padding: 20px; border-radius: 12px; border: 2px dashed #e1e8ed;">
+                        <input type="file" id="postImages" accept="image/*" multiple style="display: none;">
+                        <input type="file" id="postVideos" accept="video/*" style="display: none;">
+                        <input type="file" id="postFiles" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx" multiple style="display: none;">
+                        
+                        <div style="display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap;">
+                            <button type="button" onclick="document.getElementById('postImages').click()" style="padding: 10px 20px; border: 2px solid #3282b8; background: white; border-radius: 8px; cursor: pointer; font-family: 'Outfit', sans-serif; font-weight: 600; color: #3282b8; transition: all 0.3s ease;">
+                                🖼️ Agregar Imágenes
+                            </button>
+                            <button type="button" onclick="document.getElementById('postVideos').click()" style="padding: 10px 20px; border: 2px solid #3282b8; background: white; border-radius: 8px; cursor: pointer; font-family: 'Outfit', sans-serif; font-weight: 600; color: #3282b8; transition: all 0.3s ease;">
+                                🎥 Agregar Video
+                            </button>
+                            <button type="button" onclick="document.getElementById('postFiles').click()" style="padding: 10px 20px; border: 2px solid #3282b8; background: white; border-radius: 8px; cursor: pointer; font-family: 'Outfit', sans-serif; font-weight: 600; color: #3282b8; transition: all 0.3s ease;">
+                                📄 Agregar Archivos
+                            </button>
+                        </div>
+                        
+                        <div id="mediaPreview" style="display: none; margin-top: 15px;">
+                            <p style="font-size: 0.9em; font-weight: 600; color: #333; margin-bottom: 10px;">Archivos seleccionados:</p>
+                            <div id="mediaList" style="display: flex; flex-direction: column; gap: 8px;"></div>
+                            <button type="button" onclick="clearMedia()" style="margin-top: 10px; padding: 8px 16px; background: #d63031; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 0.85em;">
+                                Limpiar archivos
+                            </button>
+                        </div>
+                        
+                        <p style="font-size: 0.85em; color: #666; margin-top: 10px;">
+                            💡 Imágenes: JPG, PNG, GIF (max 5MB c/u) | Videos: MP4, WebM (max 50MB) | Documentos: PDF, Word, Excel, PowerPoint (max 10MB c/u)
+                        </p>
+                    </div>
+                </div>
+                
                 <div class="form-group">
                     <button type="submit" class="btn btn-primary">Publicar</button>
                 </div>
@@ -786,6 +821,157 @@
         };
 
         let currentStudent = null;
+        let selectedMediaFiles = {
+            images: [],
+            video: null,
+            files: []
+        };
+
+        // Manejar selección de imágenes
+        document.getElementById('postImages').addEventListener('change', function(e) {
+            const files = Array.from(e.target.files);
+            files.forEach(file => {
+                if (file.size > 5 * 1024 * 1024) {
+                    alert(`La imagen "${file.name}" excede el tamaño máximo de 5MB`);
+                    return;
+                }
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    selectedMediaFiles.images.push({
+                        name: file.name,
+                        type: file.type,
+                        data: event.target.result
+                    });
+                    updateMediaPreview();
+                };
+                reader.readAsDataURL(file);
+            });
+        });
+
+        // Manejar selección de video
+        document.getElementById('postVideos').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            if (file.size > 50 * 1024 * 1024) {
+                alert('El video excede el tamaño máximo de 50MB');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                selectedMediaFiles.video = {
+                    name: file.name,
+                    type: file.type,
+                    data: event.target.result
+                };
+                updateMediaPreview();
+            };
+            reader.readAsDataURL(file);
+        });
+
+        // Manejar selección de archivos
+        document.getElementById('postFiles').addEventListener('change', function(e) {
+            const files = Array.from(e.target.files);
+            files.forEach(file => {
+                if (file.size > 10 * 1024 * 1024) {
+                    alert(`El archivo "${file.name}" excede el tamaño máximo de 10MB`);
+                    return;
+                }
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    selectedMediaFiles.files.push({
+                        name: file.name,
+                        type: file.type,
+                        data: event.target.result
+                    });
+                    updateMediaPreview();
+                };
+                reader.readAsDataURL(file);
+            });
+        });
+
+        // Actualizar preview de archivos
+        function updateMediaPreview() {
+            const preview = document.getElementById('mediaPreview');
+            const list = document.getElementById('mediaList');
+            
+            let hasMedia = selectedMediaFiles.images.length > 0 || 
+                          selectedMediaFiles.video !== null || 
+                          selectedMediaFiles.files.length > 0;
+            
+            if (!hasMedia) {
+                preview.style.display = 'none';
+                return;
+            }
+            
+            preview.style.display = 'block';
+            list.innerHTML = '';
+            
+            // Mostrar imágenes
+            selectedMediaFiles.images.forEach((img, index) => {
+                list.innerHTML += `
+                    <div style="display: flex; align-items: center; gap: 10px; padding: 8px; background: white; border-radius: 6px;">
+                        <span style="font-size: 1.5em;">🖼️</span>
+                        <span style="flex: 1; font-size: 0.9em;">${img.name}</span>
+                        <button type="button" onclick="removeMedia('image', ${index})" style="padding: 4px 8px; background: #f8d7da; color: #721c24; border: none; border-radius: 4px; cursor: pointer; font-size: 0.85em;">
+                            ✕
+                        </button>
+                    </div>
+                `;
+            });
+            
+            // Mostrar video
+            if (selectedMediaFiles.video) {
+                list.innerHTML += `
+                    <div style="display: flex; align-items: center; gap: 10px; padding: 8px; background: white; border-radius: 6px;">
+                        <span style="font-size: 1.5em;">🎥</span>
+                        <span style="flex: 1; font-size: 0.9em;">${selectedMediaFiles.video.name}</span>
+                        <button type="button" onclick="removeMedia('video', 0)" style="padding: 4px 8px; background: #f8d7da; color: #721c24; border: none; border-radius: 4px; cursor: pointer; font-size: 0.85em;">
+                            ✕
+                        </button>
+                    </div>
+                `;
+            }
+            
+            // Mostrar archivos
+            selectedMediaFiles.files.forEach((file, index) => {
+                list.innerHTML += `
+                    <div style="display: flex; align-items: center; gap: 10px; padding: 8px; background: white; border-radius: 6px;">
+                        <span style="font-size: 1.5em;">📄</span>
+                        <span style="flex: 1; font-size: 0.9em;">${file.name}</span>
+                        <button type="button" onclick="removeMedia('file', ${index})" style="padding: 4px 8px; background: #f8d7da; color: #721c24; border: none; border-radius: 4px; cursor: pointer; font-size: 0.85em;">
+                            ✕
+                        </button>
+                    </div>
+                `;
+            });
+        }
+
+        // Remover archivo individual
+        function removeMedia(type, index) {
+            if (type === 'image') {
+                selectedMediaFiles.images.splice(index, 1);
+            } else if (type === 'video') {
+                selectedMediaFiles.video = null;
+            } else if (type === 'file') {
+                selectedMediaFiles.files.splice(index, 1);
+            }
+            updateMediaPreview();
+        }
+
+        // Limpiar todos los archivos
+        function clearMedia() {
+            selectedMediaFiles = {
+                images: [],
+                video: null,
+                files: []
+            };
+            document.getElementById('postImages').value = '';
+            document.getElementById('postVideos').value = '';
+            document.getElementById('postFiles').value = '';
+            updateMediaPreview();
+        }
 
         // Load data
         function loadData() {
@@ -877,27 +1063,71 @@
             }
             
             emptyBlog.style.display = 'none';
-            postsGrid.innerHTML = appData.posts.map(post => `
-                <div class="post-card">
-                    <div class="post-image">📰</div>
-                    <div class="post-content">
-                        <div class="post-meta">
-                            <span>👤 ${post.authorName}</span>
-                            <span>📅 ${new Date(post.createdAt).toLocaleDateString()}</span>
-                        </div>
-                        <div class="post-title">${post.title}</div>
-                        <div class="post-excerpt">${post.content.substring(0, 150)}${post.content.length > 150 ? '...' : ''}</div>
-                        <div class="post-actions">
-                            <span style="background: #e3f2fd; color: #1976d2; padding: 5px 12px; border-radius: 6px; font-size: 0.85em; font-weight: 600;">
-                                ${post.category}
-                            </span>
-                            ${post.authorId === currentStudent.id ? `
-                                <button class="btn btn-secondary btn-sm" onclick="deletePost(${post.id})">Eliminar</button>
-                            ` : ''}
+            postsGrid.innerHTML = appData.posts.map(post => {
+                // Generar HTML para multimedia
+                let mediaHTML = '';
+                if (post.media) {
+                    // Imágenes
+                    if (post.media.images && post.media.images.length > 0) {
+                        mediaHTML += '<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; margin: 15px 0;">';
+                        post.media.images.forEach(img => {
+                            mediaHTML += `<img src="${img.data}" alt="${img.name}" style="width: 100%; height: 150px; object-fit: cover; border-radius: 8px; cursor: pointer;" onclick="window.open('${img.data}', '_blank')">`;
+                        });
+                        mediaHTML += '</div>';
+                    }
+                    
+                    // Video
+                    if (post.media.video) {
+                        mediaHTML += `
+                            <video controls style="width: 100%; max-height: 300px; border-radius: 8px; margin: 15px 0;">
+                                <source src="${post.media.video.data}" type="${post.media.video.type}">
+                                Tu navegador no soporta el elemento de video.
+                            </video>
+                        `;
+                    }
+                    
+                    // Archivos
+                    if (post.media.files && post.media.files.length > 0) {
+                        mediaHTML += '<div style="margin: 15px 0;">';
+                        post.media.files.forEach(file => {
+                            const icon = file.name.endsWith('.pdf') ? '📄' : 
+                                        file.name.match(/\.(doc|docx)$/) ? '📝' : 
+                                        file.name.match(/\.(xls|xlsx)$/) ? '📊' : 
+                                        file.name.match(/\.(ppt|pptx)$/) ? '📽️' : '📎';
+                            mediaHTML += `
+                                <a href="${file.data}" download="${file.name}" style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 12px; background: #f5f7fa; border-radius: 6px; text-decoration: none; color: #333; margin: 5px; font-size: 0.9em;">
+                                    <span style="font-size: 1.2em;">${icon}</span>
+                                    <span>${file.name}</span>
+                                </a>
+                            `;
+                        });
+                        mediaHTML += '</div>';
+                    }
+                }
+                
+                return `
+                    <div class="post-card">
+                        <div class="post-image">📰</div>
+                        <div class="post-content">
+                            <div class="post-meta">
+                                <span>👤 ${post.authorName}</span>
+                                <span>📅 ${new Date(post.createdAt).toLocaleDateString()}</span>
+                            </div>
+                            <div class="post-title">${post.title}</div>
+                            <div class="post-excerpt">${post.content}</div>
+                            ${mediaHTML}
+                            <div class="post-actions">
+                                <span style="background: #e3f2fd; color: #1976d2; padding: 5px 12px; border-radius: 6px; font-size: 0.85em; font-weight: 600;">
+                                    ${post.category}
+                                </span>
+                                ${post.authorId === currentStudent.id ? `
+                                    <button class="btn btn-secondary btn-sm" onclick="deletePost(${post.id})">Eliminar</button>
+                                ` : ''}
+                            </div>
                         </div>
                     </div>
-                </div>
-            `).join('');
+                `;
+            }).join('');
         }
 
         // Open post modal
@@ -923,6 +1153,11 @@
                 title: document.getElementById('postTitle').value,
                 category: document.getElementById('postCategory').value,
                 content: document.getElementById('postContent').value,
+                media: {
+                    images: [...selectedMediaFiles.images],
+                    video: selectedMediaFiles.video,
+                    files: [...selectedMediaFiles.files]
+                },
                 createdAt: new Date().toISOString()
             };
             
@@ -932,6 +1167,7 @@
             saveData();
             loadPosts();
             closePostModal();
+            clearMedia();
             alert('✅ Publicación creada exitosamente');
         });
 
@@ -1042,11 +1278,11 @@
         }
 
         // Logout
-       function logout() {
+        function logout() {
             if (confirm('¿Estás seguro de cerrar sesión?')) {
                 appData.currentUser = null;
                 saveData();
-                window.location.href = 'index.html';  // ← Ahora va al index (landing page)
+                window.location.href = 'index.html';
             }
         }
 
