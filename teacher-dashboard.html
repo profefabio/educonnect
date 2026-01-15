@@ -3,11 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EduConnect - Dashboard Docente</title>
+    <title>EduConnect - Dashboard Egresado</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Crimson+Pro:wght@400;600;700&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -188,40 +185,112 @@
             }
         }
 
-        /* Students Section */
-        .content-card {
+        /* Profile Section */
+        .profile-container {
             background: var(--white);
             border-radius: 16px;
-            padding: 30px;
+            padding: 40px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         }
 
-        .section-header {
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            margin-bottom: 40px;
+            padding-bottom: 30px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3em;
+            font-weight: 700;
+        }
+
+        .profile-info h2 {
+            font-family: 'Crimson Pro', serif;
+            font-size: 2em;
+            margin-bottom: 10px;
+            color: var(--primary);
+        }
+
+        .profile-info .subtitle {
+            color: var(--text-light);
+            font-size: 1.1em;
+        }
+
+        .profile-form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text);
+            font-size: 0.95em;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 12px 15px;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.95em;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 40px;
+            margin-top: 20px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        /* Blog Section */
+        .blog-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 30px;
         }
 
-        .section-header h2 {
+        .blog-header h2 {
             font-family: 'Crimson Pro', serif;
             font-size: 2em;
             color: var(--primary);
-        }
-
-        .btn-group {
-            display: flex;
-            gap: 10px;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
         }
 
         .btn-success {
@@ -232,106 +301,6 @@
         .btn-success:hover {
             background: #00a383;
             transform: translateY(-2px);
-        }
-
-        /* Filters */
-        .filters-section {
-            background: var(--bg);
-            padding: 25px;
-            border-radius: 12px;
-            margin-bottom: 30px;
-        }
-
-        .filters-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-bottom: 15px;
-        }
-
-        .filter-group {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .filter-group label {
-            font-size: 0.9em;
-            font-weight: 600;
-            margin-bottom: 5px;
-            color: var(--text);
-        }
-
-        .filter-group input,
-        .filter-group select {
-            padding: 10px;
-            border: 2px solid var(--border);
-            border-radius: 8px;
-            font-family: 'Outfit', sans-serif;
-            transition: all 0.3s ease;
-        }
-
-        .filter-group input:focus,
-        .filter-group select:focus {
-            outline: none;
-            border-color: var(--accent);
-        }
-
-        /* Table */
-        .table-container {
-            overflow-x: auto;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th {
-            background: var(--bg);
-            padding: 15px;
-            text-align: left;
-            font-weight: 600;
-            color: var(--text);
-            border-bottom: 2px solid var(--border);
-        }
-
-        td {
-            padding: 15px;
-            border-bottom: 1px solid var(--border);
-        }
-
-        tr:hover {
-            background: #f9fafb;
-        }
-
-        .badge {
-            padding: 5px 12px;
-            border-radius: 6px;
-            font-size: 0.85em;
-            font-weight: 600;
-        }
-
-        .badge-high {
-            background: #d4edda;
-            color: #155724;
-        }
-
-        .badge-medium {
-            background: #fff3cd;
-            color: #856404;
-        }
-
-        .badge-low {
-            background: #f8d7da;
-            color: #721c24;
-        }
-
-        /* Blog Section */
-        .blog-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
         }
 
         .posts-grid {
@@ -375,6 +344,12 @@
             color: var(--text-light);
         }
 
+        .post-meta span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
         .post-title {
             font-size: 1.3em;
             font-weight: 700;
@@ -407,37 +382,102 @@
             background: #d1d8dd;
         }
 
-        /* Stats */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
+        /* Achievements Section */
+        .achievements-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 30px;
         }
 
-        .stat-card {
-            background: var(--white);
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            text-align: center;
+        .achievements-header h2 {
+            font-family: 'Crimson Pro', serif;
+            font-size: 2em;
+            color: var(--primary);
         }
 
-        .stat-icon {
-            font-size: 3em;
+        .achievements-list {
+            display: grid;
+            gap: 20px;
+        }
+
+        .achievement-card {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+            transition: all 0.3s ease;
+        }
+
+        .achievement-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .achievement-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2em;
+            flex-shrink: 0;
+        }
+
+        .achievement-content {
+            flex: 1;
+        }
+
+        .achievement-title {
+            font-size: 1.2em;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--primary);
+        }
+
+        .achievement-description {
+            color: var(--text-light);
+            line-height: 1.6;
             margin-bottom: 10px;
         }
 
-        .stat-value {
-            font-size: 2.5em;
-            font-weight: 700;
-            color: var(--accent);
-            margin-bottom: 5px;
+        .achievement-date {
+            font-size: 0.85em;
+            color: var(--text-light);
         }
 
-        .stat-label {
+        .achievement-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .empty-state {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 60px 40px;
+            text-align: center;
+        }
+
+        .empty-state-icon {
+            font-size: 5em;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .empty-state h3 {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+            color: var(--text);
+        }
+
+        .empty-state p {
             color: var(--text-light);
-            font-size: 0.95em;
+            margin-bottom: 25px;
         }
 
         /* Modal */
@@ -452,6 +492,7 @@
             z-index: 1000;
             align-items: center;
             justify-content: center;
+            animation: fadeIn 0.3s ease-out;
         }
 
         .modal.active {
@@ -496,63 +537,6 @@
             transform: rotate(90deg);
         }
 
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            font-weight: 600;
-            margin-bottom: 8px;
-            color: var(--text);
-        }
-
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid var(--border);
-            border-radius: 10px;
-            font-family: 'Outfit', sans-serif;
-            font-size: 0.95em;
-            transition: all 0.3s ease;
-        }
-
-        .form-group input:focus,
-        .form-group select:focus,
-        .form-group textarea:focus {
-            outline: none;
-            border-color: var(--accent);
-        }
-
-        .form-group textarea {
-            resize: vertical;
-            min-height: 100px;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 60px 40px;
-        }
-
-        .empty-state-icon {
-            font-size: 5em;
-            margin-bottom: 20px;
-            opacity: 0.5;
-        }
-
-        .empty-state h3 {
-            font-size: 1.5em;
-            margin-bottom: 10px;
-            color: var(--text);
-        }
-
-        .empty-state p {
-            color: var(--text-light);
-            margin-bottom: 25px;
-        }
-
         @keyframes slideUp {
             from {
                 opacity: 0;
@@ -572,26 +556,21 @@
                 padding: 20px;
             }
 
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .profile-form {
+                grid-template-columns: 1fr;
+            }
+
             .posts-grid {
                 grid-template-columns: 1fr;
             }
 
-            .filters-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .section-header {
-                flex-direction: column;
-                gap: 15px;
-            }
-
-            .btn-group {
-                width: 100%;
-                flex-direction: column;
+            .tabs-nav {
+                overflow-x: auto;
             }
         }
     </style>
@@ -614,10 +593,10 @@
         </div>
         <div class="header-right">
             <div class="user-info">
-                <div class="user-avatar" id="userAvatar">D</div>
+                <div class="user-avatar" id="userAvatar">U</div>
                 <div class="user-details">
-                    <h3 id="teacherName">Docente</h3>
-                    <p id="institutionName">Institución</p>
+                    <h3 id="userName">Usuario</h3>
+                    <p id="userRole">Egresado</p>
                 </div>
             </div>
             <button class="btn btn-danger" onclick="logout()">Cerrar Sesión</button>
@@ -628,116 +607,88 @@
     <div class="main-container">
         <!-- Tabs Navigation -->
         <div class="tabs-nav">
-            <button class="tab-btn active" onclick="showTab('students')">
-                <span>👥</span>
-                <span>Egresados</span>
+            <button class="tab-btn active" onclick="showTab('profile')">
+                <span>👤</span>
+                <span>Mi Perfil</span>
             </button>
             <button class="tab-btn" onclick="showTab('blog')">
                 <span>📰</span>
                 <span>Blog / Noticias</span>
             </button>
+            <button class="tab-btn" onclick="showTab('achievements')">
+                <span>🏆</span>
+                <span>Mis Logros</span>
+            </button>
         </div>
 
-        <!-- Students Tab -->
-        <div id="students" class="tab-content active">
-            <!-- Stats -->
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-icon">👥</div>
-                    <div class="stat-value" id="totalStudents">0</div>
-                    <div class="stat-label">Total Egresados</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon">🟢</div>
-                    <div class="stat-value" id="highAvailability">0</div>
-                    <div class="stat-label">Alta Disponibilidad</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon">🟡</div>
-                    <div class="stat-value" id="mediumAvailability">0</div>
-                    <div class="stat-label">Media Disponibilidad</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon">📅</div>
-                    <div class="stat-value" id="currentYear">2026</div>
-                    <div class="stat-label">Año Actual</div>
-                </div>
-            </div>
-
-            <!-- Content Card -->
-            <div class="content-card">
-                <div class="section-header">
-                    <h2>Lista de Egresados</h2>
-                    <div class="btn-group">
-                        <button class="btn btn-success" onclick="exportToExcel()">📊 Exportar Excel</button>
-                        <button class="btn btn-primary" onclick="exportToPDF()">📄 Exportar PDF</button>
+        <!-- Profile Tab -->
+        <div id="profile" class="tab-content active">
+            <div class="profile-container">
+                <div class="profile-header">
+                    <div class="profile-avatar" id="profileAvatar">U</div>
+                    <div class="profile-info">
+                        <h2 id="profileName">Completa tu Perfil</h2>
+                        <p class="subtitle" id="profileInstitution">Institución</p>
                     </div>
                 </div>
 
-                <!-- Filters -->
-                <div class="filters-section">
-                    <div class="filters-grid">
-                        <div class="filter-group">
-                            <label>Nombre</label>
-                            <input type="text" id="filterName" placeholder="Buscar por nombre..." onkeyup="applyFilters()">
-                        </div>
-                        <div class="filter-group">
-                            <label>Año Graduación</label>
-                            <input type="number" id="filterYear" placeholder="2020" onchange="applyFilters()">
-                        </div>
-                        <div class="filter-group">
-                            <label>Email</label>
-                            <input type="text" id="filterEmail" placeholder="Buscar por email..." onkeyup="applyFilters()">
-                        </div>
-                        <div class="filter-group">
-                            <label>Disponibilidad</label>
-                            <select id="filterAvailability" onchange="applyFilters()">
-                                <option value="">Todas</option>
-                                <option value="alta">Alta</option>
-                                <option value="media">Media</option>
-                                <option value="baja">Baja</option>
-                            </select>
-                        </div>
-                        <div class="filter-group">
-                            <label>Carrera</label>
-                            <input type="text" id="filterCareer" placeholder="Buscar carrera..." onkeyup="applyFilters()">
-                        </div>
+                <form id="profileForm" class="profile-form">
+                    <div class="form-group">
+                        <label>Nombre Completo *</label>
+                        <input type="text" id="name" required>
                     </div>
-                    <button class="btn btn-secondary" onclick="resetFilters()">Limpiar Filtros</button>
-                </div>
 
-                <!-- Table -->
-                <div class="table-container">
-                    <table id="studentsTable">
-                        <thead>
-                            <tr>
-                                <th>Nombre</th>
-                                <th>Email</th>
-                                <th>Teléfono</th>
-                                <th>Año</th>
-                                <th>Carrera</th>
-                                <th>Ocupación</th>
-                                <th>Disponibilidad</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody id="studentsTableBody">
-                        </tbody>
-                    </table>
-                </div>
+                    <div class="form-group">
+                        <label>Email *</label>
+                        <input type="email" id="email" required>
+                    </div>
 
-                <div id="emptyState" class="empty-state" style="display: none;">
-                    <div class="empty-state-icon">📚</div>
-                    <h3>No hay egresados registrados</h3>
-                    <p>Aún no hay egresados en tu institución</p>
-                </div>
+                    <div class="form-group">
+                        <label>Teléfono *</label>
+                        <input type="tel" id="phone" required placeholder="300-123-4567">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Año de Graduación *</label>
+                        <input type="number" id="graduationYear" required min="1950" max="2030">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Carrera / Estudio *</label>
+                        <input type="text" id="career" required placeholder="Ej: Ingeniería de Sistemas">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Ocupación Actual *</label>
+                        <input type="text" id="occupation" required placeholder="Ej: Desarrollador Senior">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Disponibilidad para Eventos *</label>
+                        <select id="availability" required>
+                            <option value="">Seleccione...</option>
+                            <option value="alta">Alta - Puedo asistir regularmente</option>
+                            <option value="media">Media - Puedo asistir ocasionalmente</option>
+                            <option value="baja">Baja - Rara vez puedo asistir</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>LinkedIn (Opcional)</label>
+                        <input type="url" id="linkedin" placeholder="https://linkedin.com/in/tu-perfil">
+                    </div>
+
+                    <div class="form-group full-width">
+                        <button type="submit" class="btn btn-primary">Guardar Perfil</button>
+                    </div>
+                </form>
             </div>
         </div>
 
         <!-- Blog Tab -->
         <div id="blog" class="tab-content">
             <div class="blog-header">
-                <h2 style="font-family: 'Crimson Pro', serif; font-size: 2em; color: var(--primary);">Blog / Noticias</h2>
+                <h2>Blog / Noticias</h2>
                 <button class="btn btn-success" onclick="openPostModal()">+ Nueva Publicación</button>
             </div>
 
@@ -748,8 +699,27 @@
             <div id="emptyBlog" class="empty-state" style="display: none;">
                 <div class="empty-state-icon">📰</div>
                 <h3>No hay publicaciones aún</h3>
-                <p>Comparte noticias con la comunidad educativa</p>
+                <p>Sé el primero en compartir noticias con la comunidad</p>
                 <button class="btn btn-success" onclick="openPostModal()">Crear Primera Publicación</button>
+            </div>
+        </div>
+
+        <!-- Achievements Tab -->
+        <div id="achievements" class="tab-content">
+            <div class="achievements-header">
+                <h2>Mis Logros</h2>
+                <button class="btn btn-success" onclick="openAchievementModal()">+ Agregar Logro</button>
+            </div>
+
+            <div class="achievements-list" id="achievementsList">
+                <!-- Achievements will be loaded here -->
+            </div>
+
+            <div id="emptyAchievements" class="empty-state" style="display: none;">
+                <div class="empty-state-icon">🏆</div>
+                <h3>No has registrado logros aún</h3>
+                <p>Comparte tus éxitos y reconocimientos con la comunidad</p>
+                <button class="btn btn-success" onclick="openAchievementModal()">Agregar Primer Logro</button>
             </div>
         </div>
     </div>
@@ -772,14 +742,14 @@
                         <option value="">Seleccione...</option>
                         <option value="noticia">Noticia</option>
                         <option value="evento">Evento</option>
-                        <option value="logro">Logro Institucional</option>
+                        <option value="logro">Logro Personal</option>
                         <option value="oportunidad">Oportunidad Laboral</option>
                         <option value="general">General</option>
                     </select>
                 </div>
                 <div class="form-group">
                     <label>Contenido *</label>
-                    <textarea id="postContent" rows="6" required></textarea>
+                    <textarea id="postContent" rows="6" required style="resize: vertical;"></textarea>
                 </div>
                 
                 <!-- Sección de Multimedia -->
@@ -823,6 +793,33 @@
         </div>
     </div>
 
+    <!-- Achievement Modal -->
+    <div id="achievementModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Nuevo Logro</h3>
+                <button class="close-modal" onclick="closeAchievementModal()">×</button>
+            </div>
+            <form id="achievementForm">
+                <div class="form-group">
+                    <label>Título del Logro *</label>
+                    <input type="text" id="achievementTitle" required placeholder="Ej: Certificación en...">
+                </div>
+                <div class="form-group">
+                    <label>Descripción *</label>
+                    <textarea id="achievementDescription" rows="4" required style="resize: vertical;"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Fecha *</label>
+                    <input type="date" id="achievementDate" required>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">Guardar Logro</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
         let appData = {
             institutions: [],
@@ -833,9 +830,7 @@
             currentUser: null
         };
 
-        let studentsData = [];
-        let filteredData = [];
-        let currentTeacher = null;
+        let currentStudent = null;
         let selectedMediaFiles = {
             images: [],
             video: null,
@@ -990,340 +985,158 @@
 
         // Load data
         async function loadData() {
-            console.log('📥 Cargando datos del dashboard...');
-            
-            // Cargar datos de localStorage primero para obtener currentUser
             const saved = localStorage.getItem('eduConnectData');
-            if (!saved) {
-                console.log('❌ No hay sesión activa');
-                window.location.href = 'educonnect-auth.html';
-                return;
-            }
-            
-            appData = JSON.parse(saved);
-            
-            // Verificar que hay usuario logueado y es docente
-            if (!appData.currentUser || appData.currentUser.type !== 'teacher') {
-                console.log('❌ Usuario no es docente');
-                window.location.href = 'educonnect-auth.html';
-                return;
-            }
-            
-            console.log('👤 Usuario actual:', appData.currentUser);
-            
-            try {
-                // IMPORTANTE: Limpiar datos viejos para forzar carga desde Firebase
-                console.log('🧹 Limpiando datos viejos de localStorage...');
-                appData.posts = [];
-                appData.achievements = [];
-                appData.students = [];
-                appData.institutions = [];
-                appData.teachers = [];
+            if (saved) {
+                appData = JSON.parse(saved);
                 
-                // Cargar datos desde Firebase
-                console.log('🔄 Cargando datos FRESCOS desde Firebase...');
-                
-                const [institutions, teachers, students, posts, achievements] = await Promise.all([
-                    window.firebaseConfig.getAllDocuments('institutions'),
-                    window.firebaseConfig.getAllDocuments('teachers'),
-                    window.firebaseConfig.getAllDocuments('students'),
-                    window.firebaseConfig.getAllDocuments('posts'),
-                    window.firebaseConfig.getAllDocuments('achievements')
-                ]);
-                
-                // Actualizar appData con datos de Firebase
-                appData.institutions = institutions;
-                appData.teachers = teachers;
-                appData.students = students;
-                appData.posts = posts || [];
-                appData.achievements = achievements || [];
-                
-                console.log('✅ Datos cargados desde Firebase');
-                console.log(`  📊 Instituciones: ${institutions.length}`);
-                console.log(`  👨‍🏫 Docentes: ${teachers.length}`);
-                console.log(`  🎓 Estudiantes: ${students.length}`);
-                console.log(`  📰 Posts: ${posts.length}`);
-                
-                // Buscar el docente actual (por id o por email como fallback)
-                console.log('🔍 Buscando docente con ID:', appData.currentUser.id);
-                console.log('📋 Docentes disponibles:', appData.teachers.map(t => ({id: t.id, email: t.email, name: t.name})));
-                
-                currentTeacher = appData.teachers.find(t => t.id === appData.currentUser.id);
-                
-                // Fallback: buscar por email si no se encuentra por ID
-                if (!currentTeacher && appData.currentUser.email) {
-                    console.log('⚠️ No encontrado por ID, buscando por email:', appData.currentUser.email);
-                    currentTeacher = appData.teachers.find(t => t.email === appData.currentUser.email);
-                }
-                
-                if (currentTeacher) {
-                    console.log('✅ Docente encontrado:', currentTeacher.name);
-                    loadUserInfo();
-                    loadStudents();
-                    loadPosts();
-                } else {
-                    console.error('❌ Docente no encontrado en Firebase');
+                // Verificar que hay usuario logueado y es estudiante
+                if (!appData.currentUser || appData.currentUser.type !== 'student') {
+                    console.log('❌ Usuario no es estudiante');
                     window.location.href = 'educonnect-auth.html';
+                    return;
                 }
                 
-            } catch (error) {
-                console.error('❌ Error cargando datos de Firebase:', error);
-                // Intentar con localStorage como fallback
-                currentTeacher = appData.teachers.find(t => t.id === appData.currentUser.id);
-                if (currentTeacher) {
-                    loadUserInfo();
-                    loadStudents();
-                    loadPosts();
-                } else {
-                    window.location.href = 'educonnect-auth.html';
-                }
-            }
-        }
-
-        // Load user info
-        function loadUserInfo() {
-            document.getElementById('teacherName').textContent = currentTeacher.name;
-            const inst = appData.institutions.find(i => i.id === currentTeacher.institutionId);
-            if (inst) {
-                document.getElementById('institutionName').textContent = inst.name;
-            }
-            const initials = currentTeacher.name.split(' ').map(n => n[0]).join('').toUpperCase();
-            document.getElementById('userAvatar').textContent = initials;
-        }
-
-        // Load students
-        function loadStudents() {
-            if (!appData.students) appData.students = [];
-            
-            // FILTRAR: Solo estudiantes de la misma institución del docente
-            studentsData = appData.students
-                .filter(s => s.institutionId === currentTeacher.institutionId)
-                .map(s => ({
-                    id: s.id,
-                    name: s.name,
-                    email: s.email,
-                    phone: s.phone || 'N/A',
-                    graduationYear: s.graduationYear || 'N/A',
-                    career: s.career || 'N/A',
-                    occupation: s.occupation || 'N/A',
-                    availability: s.availability || 'media'
-                }));
-            
-            filteredData = [...studentsData];
-            renderTable();
-            updateStats();
-        }
-
-        // Render table
-        function renderTable() {
-            const tbody = document.getElementById('studentsTableBody');
-            const emptyState = document.getElementById('emptyState');
-            const table = document.getElementById('studentsTable');
-
-            if (filteredData.length === 0) {
-                table.style.display = 'none';
-                emptyState.style.display = 'block';
-                return;
-            }
-
-            table.style.display = 'table';
-            emptyState.style.display = 'none';
-
-            tbody.innerHTML = filteredData.map(student => `
-                <tr>
-                    <td><strong>${student.name}</strong></td>
-                    <td>${student.email}</td>
-                    <td>${student.phone}</td>
-                    <td>${student.graduationYear}</td>
-                    <td>${student.career}</td>
-                    <td>${student.occupation}</td>
-                    <td>
-                        <span class="badge badge-${student.availability === 'alta' ? 'high' : student.availability === 'media' ? 'medium' : 'low'}">
-                            ${student.availability.charAt(0).toUpperCase() + student.availability.slice(1)}
-                        </span>
-                    </td>
-                    <td>
-                        <button class="btn btn-danger btn-sm" onclick="deleteStudent(${student.id})">Eliminar</button>
-                    </td>
-                </tr>
-            `).join('');
-        }
-
-        // Delete student
-        async function deleteStudent(studentId) {
-            if (confirm('¿Estás seguro de eliminar este egresado? Esta acción no se puede deshacer.')) {
-                console.log('🗑️ Eliminando estudiante ID:', studentId);
-                console.log('📊 Estado actual de posts:', appData.posts.length);
+                console.log('👤 Usuario actual:', appData.currentUser);
                 
                 try {
-                    // Primero, identificar qué posts pertenecen al estudiante
-                    const studentPosts = appData.posts.filter(p => {
-                        console.log(`  Comparando post ${p.id}: authorId=${p.authorId} vs studentId=${studentId} (${p.authorId === studentId})`);
-                        return p.authorId === studentId;
-                    });
+                    // IMPORTANTE: Limpiar datos viejos para forzar carga desde Firebase
+                    console.log('🧹 Limpiando datos viejos de localStorage...');
+                    appData.posts = [];
+                    appData.achievements = [];
+                    appData.students = [];
+                    appData.institutions = [];
+                    appData.teachers = [];
                     
-                    console.log(`📰 Posts del estudiante a eliminar: ${studentPosts.length}`);
-                    if (studentPosts.length > 0) {
-                        console.log('Posts encontrados:', studentPosts.map(p => ({id: p.id, title: p.title})));
+                    // Cargar datos desde Firebase
+                    console.log('🔄 Cargando datos FRESCOS desde Firebase...');
+                    
+                    const [institutions, teachers, students, posts, achievements] = await Promise.all([
+                        window.firebaseConfig.getAllDocuments('institutions'),
+                        window.firebaseConfig.getAllDocuments('teachers'),
+                        window.firebaseConfig.getAllDocuments('students'),
+                        window.firebaseConfig.getAllDocuments('posts'),
+                        window.firebaseConfig.getAllDocuments('achievements')
+                    ]);
+                    
+                    // Actualizar appData con datos de Firebase
+                    appData.institutions = institutions;
+                    appData.teachers = teachers;
+                    appData.students = students;
+                    appData.posts = posts || [];
+                    appData.achievements = achievements || [];
+                    
+                    console.log('✅ Datos cargados desde Firebase');
+                    console.log(`  📊 Instituciones: ${institutions.length}`);
+                    console.log(`  👨‍🏫 Docentes: ${teachers.length}`);
+                    console.log(`  🎓 Estudiantes: ${students.length}`);
+                    console.log(`  📰 Posts: ${posts.length}`);
+                    console.log(`  🏆 Logros: ${achievements.length}`);
+                    
+                    // Buscar el estudiante actual
+                    console.log('🔍 Buscando estudiante con ID:', appData.currentUser.id);
+                    console.log('📋 Estudiantes disponibles:', appData.students.map(s => ({id: s.id, email: s.email, name: s.name})));
+                    
+                    currentStudent = appData.students.find(s => s.id === appData.currentUser.id);
+                    
+                    // Fallback: buscar por email si no se encuentra por ID
+                    if (!currentStudent && appData.currentUser.email) {
+                        console.log('⚠️ No encontrado por ID, buscando por email:', appData.currentUser.email);
+                        currentStudent = appData.students.find(s => s.email === appData.currentUser.email);
                     }
                     
-                    // Eliminar posts PRIMERO (antes que el estudiante)
-                    for (const post of studentPosts) {
-                        console.log(`  🗑️ Eliminando post ${post.id}: "${post.title}"...`);
-                        await FirebaseIntegration.delete('posts', post.id);
-                        console.log(`  ✅ Post ${post.id} eliminado de Firebase`);
+                    if (currentStudent) {
+                        console.log('✅ Estudiante encontrado:', currentStudent.name);
+                        loadProfile();
+                        loadPosts();
+                        loadAchievements();
+                    } else {
+                        console.error('❌ Estudiante no encontrado en Firebase');
+                        window.location.href = 'educonnect-auth.html';
                     }
-                    
-                    // Luego eliminar logros
-                    const studentAchievements = appData.achievements.filter(a => a.studentId === studentId);
-                    console.log(`🏆 Logros del estudiante a eliminar: ${studentAchievements.length}`);
-                    
-                    for (const achievement of studentAchievements) {
-                        console.log(`  🗑️ Eliminando logro ${achievement.id}...`);
-                        await FirebaseIntegration.delete('achievements', achievement.id);
-                        console.log(`  ✅ Logro ${achievement.id} eliminado de Firebase`);
-                    }
-                    
-                    // Finalmente eliminar el estudiante
-                    console.log('🔄 Eliminando estudiante de Firebase...');
-                    await FirebaseIntegration.delete('students', studentId);
-                    console.log('✅ Estudiante eliminado de Firebase');
-                    
-                    // Actualizar arrays locales
-                    appData.students = appData.students.filter(s => s.id !== studentId);
-                    appData.posts = appData.posts.filter(p => p.authorId !== studentId);
-                    appData.achievements = appData.achievements.filter(a => a.studentId !== studentId);
-                    
-                    console.log('📊 Estado después de eliminar:', {
-                        students: appData.students.length,
-                        posts: appData.posts.length,
-                        achievements: appData.achievements.length
-                    });
-                    
-                    saveData();
-                    loadStudents();
-                    loadPosts();
-                    
-                    console.log('✅ Eliminación completa exitosa');
-                    alert('✅ Egresado eliminado exitosamente');
                     
                 } catch (error) {
-                    console.error('❌ Error al eliminar:', error);
-                    console.error('Stack trace:', error.stack);
-                    alert('❌ Error al eliminar. Revisa la consola para más detalles.');
+                    console.error('❌ Error cargando datos de Firebase:', error);
+                    // Intentar con localStorage como fallback
+                    currentStudent = appData.students.find(s => s.id === appData.currentUser.id);
+                    if (!currentStudent && appData.currentUser.email) {
+                        currentStudent = appData.students.find(s => s.email === appData.currentUser.email);
+                    }
+                    if (currentStudent) {
+                        loadProfile();
+                        loadPosts();
+                        loadAchievements();
+                    } else {
+                        window.location.href = 'educonnect-auth.html';
+                    }
                 }
+            } else {
+                window.location.href = 'educonnect-auth.html';
             }
         }
 
-        // Update stats
-        function updateStats() {
-            const total = studentsData.length;
-            const high = studentsData.filter(s => s.availability === 'alta').length;
-            const medium = studentsData.filter(s => s.availability === 'media').length;
-
-            document.getElementById('totalStudents').textContent = total;
-            document.getElementById('highAvailability').textContent = high;
-            document.getElementById('mediumAvailability').textContent = medium;
-            document.getElementById('currentYear').textContent = new Date().getFullYear();
-        }
-
-        // Apply filters
-        function applyFilters() {
-            const nameFilter = document.getElementById('filterName').value.toLowerCase();
-            const yearFilter = document.getElementById('filterYear').value;
-            const emailFilter = document.getElementById('filterEmail').value.toLowerCase();
-            const availabilityFilter = document.getElementById('filterAvailability').value;
-            const careerFilter = document.getElementById('filterCareer').value.toLowerCase();
-
-            filteredData = studentsData.filter(student => {
-                const matchName = !nameFilter || student.name.toLowerCase().includes(nameFilter);
-                const matchYear = !yearFilter || student.graduationYear == yearFilter;
-                const matchEmail = !emailFilter || student.email.toLowerCase().includes(emailFilter);
-                const matchAvailability = !availabilityFilter || student.availability === availabilityFilter;
-                const matchCareer = !careerFilter || student.career.toLowerCase().includes(careerFilter);
-
-                return matchName && matchYear && matchEmail && matchAvailability && matchCareer;
-            });
-
-            renderTable();
-        }
-
-        // Reset filters
-        function resetFilters() {
-            document.getElementById('filterName').value = '';
-            document.getElementById('filterYear').value = '';
-            document.getElementById('filterEmail').value = '';
-            document.getElementById('filterAvailability').value = '';
-            document.getElementById('filterCareer').value = '';
-
-            filteredData = [...studentsData];
-            renderTable();
-        }
-
-        // Export to Excel
-        function exportToExcel() {
-            const data = filteredData.map(s => ({
-                'Nombre': s.name,
-                'Email': s.email,
-                'Teléfono': s.phone,
-                'Año de Graduación': s.graduationYear,
-                'Carrera': s.career,
-                'Ocupación Actual': s.occupation,
-                'Disponibilidad': s.availability.charAt(0).toUpperCase() + s.availability.slice(1)
-            }));
-
-            const ws = XLSX.utils.json_to_sheet(data);
+        // Load profile
+        function loadProfile() {
+            document.getElementById('userName').textContent = currentStudent.name;
+            document.getElementById('profileName').textContent = currentStudent.name;
             
-            const wscols = [
-                {wch: 25}, {wch: 30}, {wch: 15}, 
-                {wch: 15}, {wch: 25}, {wch: 25}, {wch: 15}
-            ];
-            ws['!cols'] = wscols;
-
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, 'Egresados');
-
-            const inst = appData.institutions.find(i => i.id === currentTeacher.institutionId);
-            const filename = `Egresados_${inst ? inst.name.replace(/ /g, '_') : 'Institucion'}_${new Date().toISOString().split('T')[0]}.xlsx`;
+            const inst = appData.institutions.find(i => i.id === currentStudent.institutionId);
+            if (inst) {
+                document.getElementById('profileInstitution').textContent = inst.name;
+            }
             
-            XLSX.writeFile(wb, filename);
+            const initials = currentStudent.name.split(' ').map(n => n[0]).join('').toUpperCase();
+            document.getElementById('userAvatar').textContent = initials;
+            document.getElementById('profileAvatar').textContent = initials;
+            
+            // Fill form
+            document.getElementById('name').value = currentStudent.name || '';
+            document.getElementById('email').value = currentStudent.email || '';
+            document.getElementById('phone').value = currentStudent.phone || '';
+            document.getElementById('graduationYear').value = currentStudent.graduationYear || '';
+            document.getElementById('career').value = currentStudent.career || '';
+            document.getElementById('occupation').value = currentStudent.occupation || '';
+            document.getElementById('availability').value = currentStudent.availability || '';
+            document.getElementById('linkedin').value = currentStudent.linkedin || '';
         }
 
-        // Export to PDF
-        function exportToPDF() {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-
-            const inst = appData.institutions.find(i => i.id === currentTeacher.institutionId);
+        // Save profile
+        document.getElementById('profileForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
             
-            doc.setFontSize(18);
-            doc.text(`Reporte de Egresados`, 14, 20);
-            doc.setFontSize(12);
-            doc.text(`${inst ? inst.name : 'Institución'}`, 14, 28);
-            doc.setFontSize(10);
-            doc.text(`Fecha: ${new Date().toLocaleDateString()}`, 14, 35);
-
-            const tableData = filteredData.map(s => [
-                s.name,
-                s.email,
-                s.phone,
-                s.graduationYear,
-                s.career,
-                s.occupation,
-                s.availability.charAt(0).toUpperCase() + s.availability.slice(1)
-            ]);
-
-            doc.autoTable({
-                startY: 40,
-                head: [['Nombre', 'Email', 'Teléfono', 'Año', 'Carrera', 'Ocupación', 'Disponibilidad']],
-                body: tableData,
-                styles: { fontSize: 8 },
-                headStyles: { fillColor: [15, 76, 117] }
-            });
-
-            const filename = `Egresados_${inst ? inst.name.replace(/ /g, '_') : 'Institucion'}_${new Date().toISOString().split('T')[0]}.pdf`;
-            doc.save(filename);
-        }
+            console.log('💾 Guardando perfil de estudiante...');
+            
+            currentStudent.name = document.getElementById('name').value;
+            currentStudent.email = document.getElementById('email').value;
+            currentStudent.phone = document.getElementById('phone').value;
+            currentStudent.graduationYear = parseInt(document.getElementById('graduationYear').value);
+            currentStudent.career = document.getElementById('career').value;
+            currentStudent.occupation = document.getElementById('occupation').value;
+            currentStudent.availability = document.getElementById('availability').value;
+            currentStudent.linkedin = document.getElementById('linkedin').value;
+            
+            try {
+                // Actualizar en Firebase
+                console.log('🔄 Actualizando en Firebase...', currentStudent);
+                const result = await FirebaseIntegration.update('students', currentStudent.id, currentStudent);
+                console.log('✅ Perfil actualizado en Firebase:', result);
+                
+                // Update in appData
+                const index = appData.students.findIndex(s => s.id === currentStudent.id);
+                if (index !== -1) {
+                    appData.students[index] = currentStudent;
+                }
+                
+                // Update currentUser
+                appData.currentUser = { ...currentStudent, type: 'student' };
+                
+                saveData();
+                loadProfile();
+                alert('✅ Perfil actualizado exitosamente');
+            } catch (error) {
+                console.error('❌ Error al actualizar perfil:', error);
+                alert('❌ Error al actualizar perfil. Revisa la consola.');
+            }
+        });
 
         // Load posts
         function loadPosts() {
@@ -1396,7 +1209,7 @@
                                 <span style="background: #e3f2fd; color: #1976d2; padding: 5px 12px; border-radius: 6px; font-size: 0.85em; font-weight: 600;">
                                     ${post.category}
                                 </span>
-                                ${post.authorId === currentTeacher.id ? `
+                                ${post.authorId === currentStudent.id ? `
                                     <button class="btn btn-secondary btn-sm" onclick="deletePost(${post.id})">Eliminar</button>
                                 ` : ''}
                             </div>
@@ -1421,111 +1234,54 @@
         document.getElementById('postForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            console.log('📝 Creando publicación del docente...');
-            console.log('👤 currentTeacher:', currentTeacher);
+            console.log('📝 Creando nueva publicación...');
             
-            if (!currentTeacher) {
-                console.error('❌ currentTeacher no está definido!');
-                alert('❌ Error: Sesión de docente no válida. Recarga la página.');
+            // VERIFICAR SI HAY MULTIMEDIA
+            const hasMedia = selectedMediaFiles.images.length > 0 || 
+                            selectedMediaFiles.video !== null || 
+                            selectedMediaFiles.files.length > 0;
+            
+            if (hasMedia) {
+                alert('⚠️ MULTIMEDIA DESHABILITADA TEMPORALMENTE\n\n' +
+                      'Para guardar imágenes/videos necesitas que el docente active Firebase Storage.\n\n' +
+                      'Por ahora, crea el post SIN multimedia.');
                 return;
             }
             
-            console.log('📊 Estado antes de crear:', {
-                postsActuales: appData.posts.length,
-                teacherId: currentTeacher.id,
-                teacherName: currentTeacher.name
-            });
-            
-            // Crear objeto media para localStorage (con multimedia)
-            let mediaObject = null;
-            if (selectedMediaFiles.images.length > 0 || 
-                selectedMediaFiles.video !== null || 
-                selectedMediaFiles.files.length > 0) {
-                mediaObject = {
-                    images: [...selectedMediaFiles.images],
-                    video: selectedMediaFiles.video,
-                    files: [...selectedMediaFiles.files]
-                };
-            }
-            
-            // Post COMPLETO (con multimedia) para localStorage y UI
-            const postCompleto = {
+            const post = {
                 id: Date.now(),
-                authorId: currentTeacher.id,
-                authorName: currentTeacher.name,
-                authorType: 'teacher',
+                authorId: currentStudent.id,
+                authorName: currentStudent.name,
+                authorType: 'student',
                 title: document.getElementById('postTitle').value,
                 category: document.getElementById('postCategory').value,
                 content: document.getElementById('postContent').value,
                 createdAt: new Date().toISOString()
             };
             
-            if (mediaObject) {
-                postCompleto.media = mediaObject;
-            }
+            console.log('📄 Post creado (sin multimedia):', post);
             
-            // Post SIMPLE (sin multimedia) para Firebase
-            const postFirebase = {
-                id: postCompleto.id,
-                authorId: postCompleto.authorId,
-                authorName: postCompleto.authorName,
-                authorType: postCompleto.authorType,
-                title: postCompleto.title,
-                category: postCompleto.category,
-                content: postCompleto.content,
-                createdAt: postCompleto.createdAt,
-                hasMedia: mediaObject !== null  // Indicador de que tiene multimedia
-            };
-            
-            console.log('📄 Post creado:', postCompleto);
-            console.log('📄 Tiene multimedia?', mediaObject ? 'Sí' : 'No');
-            console.log('⚠️ Nota: Multimedia se guarda solo en localStorage, no en Firebase');
-            
-            if (!appData.posts) {
-                console.log('⚠️ Inicializando appData.posts...');
-                appData.posts = [];
-            }
+            if (!appData.posts) appData.posts = [];
             
             try {
-                // Guardar en Firebase SIN multimedia
-                console.log('💾 Guardando en Firebase (sin multimedia)...');
-                console.log('🔄 Post para Firebase:', postFirebase);
-                
-                const result = await FirebaseIntegration.save('posts', postFirebase);
-                
+                // Guardar en Firebase
+                console.log('💾 Guardando en Firebase...');
+                const result = await FirebaseIntegration.save('posts', post);
                 console.log('✅ Resultado de Firebase:', result);
                 
                 if (!result) {
-                    throw new Error('Firebase devolvió null - el post no se guardó');
+                    throw new Error('Firebase devolvió null');
                 }
                 
-                // Agregar post COMPLETO (con multimedia) a array local
-                console.log('➕ Agregando post completo a appData.posts...');
-                appData.posts.unshift(postCompleto);
-                console.log('📊 Posts ahora:', appData.posts.length);
+                appData.posts.unshift(post);
                 
-                // Guardar en localStorage (con multimedia)
-                console.log('💾 Guardando en localStorage (con multimedia)...');
                 saveData();
-                
-                // Recargar posts
-                console.log('🔄 Recargando lista de posts...');
                 loadPosts();
-                
-                // Cerrar modal
-                console.log('🚪 Cerrando modal...');
                 closePostModal();
                 clearMedia();
-                
-                console.log('🎉 ¡Publicación creada exitosamente!');
-                console.log('⚠️ Nota: La multimedia solo está disponible en este dispositivo');
-                alert('✅ Publicación creada exitosamente\n\n⚠️ Nota: Las imágenes/archivos solo se ven en este dispositivo');
-                
+                alert('✅ Publicación creada exitosamente');
             } catch (error) {
-                console.error('❌ Error al guardar post:', error);
-                console.error('❌ Tipo de error:', error.constructor.name);
-                console.error('❌ Mensaje:', error.message);
-                console.error('❌ Stack:', error.stack);
+                console.error('❌ Error al guardar:', error);
                 alert('❌ Error al crear la publicación: ' + error.message);
             }
         });
@@ -1541,6 +1297,96 @@
             }
         }
 
+        // Load achievements
+        function loadAchievements() {
+            const achievementsList = document.getElementById('achievementsList');
+            const emptyAchievements = document.getElementById('emptyAchievements');
+            
+            if (!appData.achievements) appData.achievements = [];
+            
+            const myAchievements = appData.achievements.filter(a => a.studentId === currentStudent.id);
+            
+            if (myAchievements.length === 0) {
+                achievementsList.innerHTML = '';
+                emptyAchievements.style.display = 'block';
+                return;
+            }
+            
+            emptyAchievements.style.display = 'none';
+            achievementsList.innerHTML = myAchievements.map(achievement => `
+                <div class="achievement-card">
+                    <div class="achievement-icon">🏆</div>
+                    <div class="achievement-content">
+                        <div class="achievement-title">${achievement.title}</div>
+                        <div class="achievement-description">${achievement.description}</div>
+                        <div class="achievement-date">📅 ${new Date(achievement.date).toLocaleDateString()}</div>
+                    </div>
+                    <div class="achievement-actions">
+                        <button class="btn btn-danger btn-sm" onclick="deleteAchievement(${achievement.id})">Eliminar</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Open achievement modal
+        function openAchievementModal() {
+            document.getElementById('achievementModal').classList.add('active');
+            document.getElementById('achievementForm').reset();
+        }
+
+        // Close achievement modal
+        function closeAchievementModal() {
+            document.getElementById('achievementModal').classList.remove('active');
+        }
+
+        // Create achievement
+        document.getElementById('achievementForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            console.log('🏆 Creando nuevo logro...');
+            
+            const achievement = {
+                id: Date.now(),
+                studentId: currentStudent.id,
+                title: document.getElementById('achievementTitle').value,
+                description: document.getElementById('achievementDescription').value,
+                date: document.getElementById('achievementDate').value,
+                createdAt: new Date().toISOString()
+            };
+            
+            console.log('📄 Logro creado:', achievement);
+            
+            if (!appData.achievements) appData.achievements = [];
+            
+            try {
+                // Guardar en Firebase
+                console.log('💾 Guardando logro en Firebase...');
+                const result = await FirebaseIntegration.save('achievements', achievement);
+                console.log('✅ Resultado de Firebase:', result);
+                
+                appData.achievements.unshift(achievement);
+                
+                saveData();
+                loadAchievements();
+                closeAchievementModal();
+                alert('✅ Logro agregado exitosamente');
+            } catch (error) {
+                console.error('❌ Error al guardar logro:', error);
+                alert('❌ Error al agregar el logro. Revisa la consola.');
+            }
+        });
+
+        // Delete achievement
+        async function deleteAchievement(achievementId) {
+            if (confirm('¿Estás seguro de eliminar este logro?')) {
+                // Eliminar de Firebase
+            await FirebaseIntegration.delete('achievements', achievementId);
+            appData.achievements = appData.achievements.filter(a => a.id !== achievementId);
+                saveData();
+                loadAchievements();
+            }
+        }
+
         // Save data
         function saveData() {
             localStorage.setItem('eduConnectData', JSON.stringify(appData));
@@ -1548,15 +1394,20 @@
 
         // Show tab
         function showTab(tabName) {
+            // Hide all tabs
             document.querySelectorAll('.tab-content').forEach(tab => {
                 tab.classList.remove('active');
             });
             
+            // Remove active from all buttons
             document.querySelectorAll('.tab-btn').forEach(btn => {
                 btn.classList.remove('active');
             });
             
+            // Show selected tab
             document.getElementById(tabName).classList.add('active');
+            
+            // Add active to clicked button
             event.target.closest('.tab-btn').classList.add('active');
         }
 
