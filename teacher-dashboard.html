@@ -595,6 +595,14 @@
             }
         }
     </style>
+    
+    <!-- Firebase SDK v9 (Compat mode) -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    
+    <!-- Configuración de Firebase -->
+    <script src="firebase-config.js"></script>
+    <script src="firebase-integration.js"></script>
 </head>
 <body>
     <!-- Header -->
@@ -1071,7 +1079,7 @@
         }
 
         // Delete student
-        function deleteStudent(studentId) {
+        async function deleteStudent(studentId) {
             if (confirm('¿Estás seguro de eliminar este egresado? Esta acción no se puede deshacer.')) {
                 // Eliminar del array principal
                 appData.students = appData.students.filter(s => s.id !== studentId);
@@ -1296,7 +1304,7 @@
         }
 
         // Create post
-        document.getElementById('postForm').addEventListener('submit', function(e) {
+        document.getElementById('postForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
             const post = {
@@ -1316,6 +1324,8 @@
             };
             
             if (!appData.posts) appData.posts = [];
+            // Guardar en Firebase
+            await FirebaseIntegration.save('posts', post);
             appData.posts.unshift(post);
             
             saveData();
@@ -1326,9 +1336,11 @@
         });
 
         // Delete post
-        function deletePost(postId) {
+        async function deletePost(postId) {
             if (confirm('¿Estás seguro de eliminar esta publicación?')) {
-                appData.posts = appData.posts.filter(p => p.id !== postId);
+                // Eliminar de Firebase
+            await FirebaseIntegration.delete('posts', postId);
+            appData.posts = appData.posts.filter(p => p.id !== postId);
                 saveData();
                 loadPosts();
             }
