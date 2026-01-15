@@ -7,6 +7,7 @@
     'use strict';
     
     console.log('🔥 Cargando Firebase Integration...');
+    console.log('⏳ Esperando a que Firebase esté completamente inicializado...');
     
     let firebaseReady = false;
     
@@ -30,19 +31,25 @@
             await waitForFirebase();
             console.log('✅ Firebase config detectado');
             
-            const initialized = await window.firebaseConfig.initializeFirebase();
-            if (!initialized) {
-                console.error('❌ Error inicializando Firebase');
-                return false;
+            // Esperar a que Firebase se inicialice (puede tomar un momento)
+            let attempts = 0;
+            while (!window.firebaseConfig.getDb() && attempts < 50) {
+                await new Promise(resolve => setTimeout(resolve, 100));
+                attempts++;
             }
             
-            console.log('✅ Firebase inicializado correctamente');
-            firebaseReady = true;
-            
-            // Cargar datos desde Firebase
-            await loadAllFromFirebase();
-            
-            return true;
+            if (window.firebaseConfig.getDb()) {
+                console.log('✅ Firebase completamente inicializado');
+                firebaseReady = true;
+                
+                // Cargar datos desde Firebase
+                await loadAllFromFirebase();
+                
+                return true;
+            } else {
+                console.error('❌ Timeout esperando Firebase');
+                return false;
+            }
         } catch (error) {
             console.error('Error en initialize:', error);
             return false;
@@ -90,8 +97,16 @@
         
         // Guardar en Firebase
         save: async function(collection, data) {
+            // Esperar hasta que Firebase esté listo (max 10 segundos)
+            let attempts = 0;
+            while (!firebaseReady && attempts < 100) {
+                await new Promise(resolve => setTimeout(resolve, 100));
+                attempts++;
+            }
+            
             if (!firebaseReady) {
-                console.warn('Firebase no listo, guardando solo en localStorage');
+                console.warn('⏳ Firebase no listo después de 10 segundos. Guardando solo en localStorage. Verifica que firebase-config.js esté cargando correctamente.');
+                localStorage.setItem('eduConnectData', JSON.stringify(window.appData));
                 return null;
             }
             
@@ -105,6 +120,8 @@
                 return docId;
             } catch (error) {
                 console.error(`Error guardando en ${collection}:`, error);
+                // Guardar al menos en localStorage
+                localStorage.setItem('eduConnectData', JSON.stringify(window.appData));
                 throw error;
             }
         },
@@ -168,11 +185,13 @@
         }
     };
     
-    // Inicializar cuando el DOM esté listo
+    // Inicializar con retraso para asegurar que todo esté listo
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initialize);
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(initialize, 1000); // Esperar 1 segundo adicional
+        });
     } else {
-        initialize();
+        setTimeout(initialize, 1000);
     }
     
     console.log('✅ Firebase Integration cargado');
