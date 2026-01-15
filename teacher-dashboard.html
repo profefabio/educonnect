@@ -1151,41 +1151,64 @@
         async function deleteStudent(studentId) {
             if (confirm('¿Estás seguro de eliminar este egresado? Esta acción no se puede deshacer.')) {
                 console.log('🗑️ Eliminando estudiante ID:', studentId);
+                console.log('📊 Estado actual de posts:', appData.posts.length);
                 
                 try {
-                    // Eliminar de Firebase
-                    console.log('🔄 Eliminando de Firebase...');
+                    // Primero, identificar qué posts pertenecen al estudiante
+                    const studentPosts = appData.posts.filter(p => {
+                        console.log(`  Comparando post ${p.id}: authorId=${p.authorId} vs studentId=${studentId} (${p.authorId === studentId})`);
+                        return p.authorId === studentId;
+                    });
+                    
+                    console.log(`📰 Posts del estudiante a eliminar: ${studentPosts.length}`);
+                    if (studentPosts.length > 0) {
+                        console.log('Posts encontrados:', studentPosts.map(p => ({id: p.id, title: p.title})));
+                    }
+                    
+                    // Eliminar posts PRIMERO (antes que el estudiante)
+                    for (const post of studentPosts) {
+                        console.log(`  🗑️ Eliminando post ${post.id}: "${post.title}"...`);
+                        await FirebaseIntegration.delete('posts', post.id);
+                        console.log(`  ✅ Post ${post.id} eliminado de Firebase`);
+                    }
+                    
+                    // Luego eliminar logros
+                    const studentAchievements = appData.achievements.filter(a => a.studentId === studentId);
+                    console.log(`🏆 Logros del estudiante a eliminar: ${studentAchievements.length}`);
+                    
+                    for (const achievement of studentAchievements) {
+                        console.log(`  🗑️ Eliminando logro ${achievement.id}...`);
+                        await FirebaseIntegration.delete('achievements', achievement.id);
+                        console.log(`  ✅ Logro ${achievement.id} eliminado de Firebase`);
+                    }
+                    
+                    // Finalmente eliminar el estudiante
+                    console.log('🔄 Eliminando estudiante de Firebase...');
                     await FirebaseIntegration.delete('students', studentId);
                     console.log('✅ Estudiante eliminado de Firebase');
                     
-                    // Eliminar publicaciones del estudiante
-                    const studentPosts = appData.posts.filter(p => p.authorId === studentId);
-                    console.log(`📰 Eliminando ${studentPosts.length} posts del estudiante...`);
-                    for (const post of studentPosts) {
-                        await FirebaseIntegration.delete('posts', post.id);
-                    }
-                    
-                    // Eliminar logros del estudiante
-                    const studentAchievements = appData.achievements.filter(a => a.studentId === studentId);
-                    console.log(`🏆 Eliminando ${studentAchievements.length} logros del estudiante...`);
-                    for (const achievement of studentAchievements) {
-                        await FirebaseIntegration.delete('achievements', achievement.id);
-                    }
-                    
-                    // Eliminar del array local
+                    // Actualizar arrays locales
                     appData.students = appData.students.filter(s => s.id !== studentId);
                     appData.posts = appData.posts.filter(p => p.authorId !== studentId);
                     appData.achievements = appData.achievements.filter(a => a.studentId !== studentId);
+                    
+                    console.log('📊 Estado después de eliminar:', {
+                        students: appData.students.length,
+                        posts: appData.posts.length,
+                        achievements: appData.achievements.length
+                    });
                     
                     saveData();
                     loadStudents();
                     loadPosts();
                     
-                    console.log('✅ Eliminación completa');
+                    console.log('✅ Eliminación completa exitosa');
                     alert('✅ Egresado eliminado exitosamente');
+                    
                 } catch (error) {
                     console.error('❌ Error al eliminar:', error);
-                    alert('❌ Error al eliminar. Revisa la consola.');
+                    console.error('Stack trace:', error.stack);
+                    alert('❌ Error al eliminar. Revisa la consola para más detalles.');
                 }
             }
         }
@@ -1397,6 +1420,19 @@
             e.preventDefault();
             
             console.log('📝 Creando publicación del docente...');
+            console.log('👤 currentTeacher:', currentTeacher);
+            
+            if (!currentTeacher) {
+                console.error('❌ currentTeacher no está definido!');
+                alert('❌ Error: Sesión de docente no válida. Recarga la página.');
+                return;
+            }
+            
+            console.log('📊 Estado antes de crear:', {
+                postsActuales: appData.posts.length,
+                teacherId: currentTeacher.id,
+                teacherName: currentTeacher.name
+            });
             
             const post = {
                 id: Date.now(),
@@ -1415,25 +1451,61 @@
             };
             
             console.log('📄 Post creado:', post);
+            console.log('📄 Detalles del post:', {
+                id: post.id,
+                authorId: post.authorId,
+                authorName: post.authorName,
+                title: post.title,
+                category: post.category,
+                contentLength: post.content.length
+            });
             
-            if (!appData.posts) appData.posts = [];
+            if (!appData.posts) {
+                console.log('⚠️ Inicializando appData.posts...');
+                appData.posts = [];
+            }
             
             try {
                 // Guardar en Firebase
                 console.log('💾 Guardando en Firebase...');
+                console.log('🔄 Llamando FirebaseIntegration.save...');
+                
                 const result = await FirebaseIntegration.save('posts', post);
+                
                 console.log('✅ Resultado de Firebase:', result);
+                console.log('✅ Tipo de resultado:', typeof result);
                 
+                if (!result) {
+                    console.warn('⚠️ Firebase devolvió null o undefined');
+                }
+                
+                // Agregar a array local
+                console.log('➕ Agregando a appData.posts...');
                 appData.posts.unshift(post);
+                console.log('📊 Posts ahora:', appData.posts.length);
                 
+                // Guardar en localStorage
+                console.log('💾 Guardando en localStorage...');
                 saveData();
+                
+                // Recargar posts
+                console.log('🔄 Recargando lista de posts...');
                 loadPosts();
+                
+                // Cerrar modal
+                console.log('🚪 Cerrando modal...');
                 closePostModal();
                 clearMedia();
+                
+                console.log('🎉 ¡Publicación creada exitosamente!');
                 alert('✅ Publicación creada exitosamente');
+                
             } catch (error) {
                 console.error('❌ Error al guardar post:', error);
-                alert('❌ Error al crear la publicación. Revisa la consola.');
+                console.error('❌ Tipo de error:', error.constructor.name);
+                console.error('❌ Mensaje:', error.message);
+                console.error('❌ Stack:', error.stack);
+                alert('❌ Error al crear la publicación. Revisa la consola para más detalles.');
             }
         });
 
