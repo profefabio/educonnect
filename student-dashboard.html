@@ -997,8 +997,16 @@
                 console.log('👤 Usuario actual:', appData.currentUser);
                 
                 try {
+                    // IMPORTANTE: Limpiar datos viejos para forzar carga desde Firebase
+                    console.log('🧹 Limpiando datos viejos de localStorage...');
+                    appData.posts = [];
+                    appData.achievements = [];
+                    appData.students = [];
+                    appData.institutions = [];
+                    appData.teachers = [];
+                    
                     // Cargar datos desde Firebase
-                    console.log('🔄 Cargando datos desde Firebase...');
+                    console.log('🔄 Cargando datos FRESCOS desde Firebase...');
                     
                     const [institutions, teachers, students, posts, achievements] = await Promise.all([
                         window.firebaseConfig.getAllDocuments('institutions'),
@@ -1307,6 +1315,9 @@
             };
             
             if (!appData.achievements) appData.achievements = [];
+            
+            // Guardar en Firebase
+            await FirebaseIntegration.save('achievements', achievement);
             appData.achievements.unshift(achievement);
             
             saveData();
