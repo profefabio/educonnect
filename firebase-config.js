@@ -65,6 +65,11 @@ async function initializeFirebase() {
     
     firebaseInitialized = true;
     console.log('Firebase inicializado correctamente');
+    
+    // Emitir evento personalizado para notificar que Firebase está listo
+    window.firebaseReady = true;
+    window.dispatchEvent(new CustomEvent('firebaseInitialized'));
+    
     return true;
     
   } catch (error) {
