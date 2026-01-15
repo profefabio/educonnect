@@ -574,6 +574,14 @@
             }
         }
     </style>
+    
+    <!-- Firebase SDK v9 (Compat mode) -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    
+    <!-- Configuración de Firebase -->
+    <script src="firebase-config.js"></script>
+    <script src="firebase-integration.js"></script>
 </head>
 <body>
     <!-- Header -->
@@ -1023,7 +1031,7 @@
         }
 
         // Save profile
-        document.getElementById('profileForm').addEventListener('submit', function(e) {
+        document.getElementById('profileForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
             currentStudent.name = document.getElementById('name').value;
@@ -1142,7 +1150,7 @@
         }
 
         // Create post
-        document.getElementById('postForm').addEventListener('submit', function(e) {
+        document.getElementById('postForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
             const post = {
@@ -1162,6 +1170,8 @@
             };
             
             if (!appData.posts) appData.posts = [];
+            // Guardar en Firebase
+            await FirebaseIntegration.save('posts', post);
             appData.posts.unshift(post);
             
             saveData();
@@ -1172,9 +1182,11 @@
         });
 
         // Delete post
-        function deletePost(postId) {
+        async function deletePost(postId) {
             if (confirm('¿Estás seguro de eliminar esta publicación?')) {
-                appData.posts = appData.posts.filter(p => p.id !== postId);
+                // Eliminar de Firebase
+            await FirebaseIntegration.delete('posts', postId);
+            appData.posts = appData.posts.filter(p => p.id !== postId);
                 saveData();
                 loadPosts();
             }
@@ -1223,7 +1235,7 @@
         }
 
         // Create achievement
-        document.getElementById('achievementForm').addEventListener('submit', function(e) {
+        document.getElementById('achievementForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
             const achievement = {
@@ -1245,9 +1257,11 @@
         });
 
         // Delete achievement
-        function deleteAchievement(achievementId) {
+        async function deleteAchievement(achievementId) {
             if (confirm('¿Estás seguro de eliminar este logro?')) {
-                appData.achievements = appData.achievements.filter(a => a.id !== achievementId);
+                // Eliminar de Firebase
+            await FirebaseIntegration.delete('achievements', achievementId);
+            appData.achievements = appData.achievements.filter(a => a.id !== achievementId);
                 saveData();
                 loadAchievements();
             }
