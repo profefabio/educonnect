@@ -1220,6 +1220,8 @@
         document.getElementById('postForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
+            console.log('📝 Creando nueva publicación...');
+            
             const post = {
                 id: Date.now(),
                 authorId: currentStudent.id,
@@ -1236,16 +1238,27 @@
                 createdAt: new Date().toISOString()
             };
             
-            if (!appData.posts) appData.posts = [];
-            // Guardar en Firebase
-            await FirebaseIntegration.save('posts', post);
-            appData.posts.unshift(post);
+            console.log('📄 Post creado:', post);
             
-            saveData();
-            loadPosts();
-            closePostModal();
-            clearMedia();
-            alert('✅ Publicación creada exitosamente');
+            if (!appData.posts) appData.posts = [];
+            
+            try {
+                // Guardar en Firebase
+                console.log('💾 Guardando en Firebase...');
+                const result = await FirebaseIntegration.save('posts', post);
+                console.log('✅ Resultado de Firebase:', result);
+                
+                appData.posts.unshift(post);
+                
+                saveData();
+                loadPosts();
+                closePostModal();
+                clearMedia();
+                alert('✅ Publicación creada exitosamente');
+            } catch (error) {
+                console.error('❌ Error al guardar:', error);
+                alert('❌ Error al crear la publicación. Revisa la consola.');
+            }
         });
 
         // Delete post
@@ -1305,6 +1318,8 @@
         document.getElementById('achievementForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
+            console.log('🏆 Creando nuevo logro...');
+            
             const achievement = {
                 id: Date.now(),
                 studentId: currentStudent.id,
@@ -1314,16 +1329,26 @@
                 createdAt: new Date().toISOString()
             };
             
+            console.log('📄 Logro creado:', achievement);
+            
             if (!appData.achievements) appData.achievements = [];
             
-            // Guardar en Firebase
-            await FirebaseIntegration.save('achievements', achievement);
-            appData.achievements.unshift(achievement);
-            
-            saveData();
-            loadAchievements();
-            closeAchievementModal();
-            alert('✅ Logro agregado exitosamente');
+            try {
+                // Guardar en Firebase
+                console.log('💾 Guardando logro en Firebase...');
+                const result = await FirebaseIntegration.save('achievements', achievement);
+                console.log('✅ Resultado de Firebase:', result);
+                
+                appData.achievements.unshift(achievement);
+                
+                saveData();
+                loadAchievements();
+                closeAchievementModal();
+                alert('✅ Logro agregado exitosamente');
+            } catch (error) {
+                console.error('❌ Error al guardar logro:', error);
+                alert('❌ Error al agregar el logro. Revisa la consola.');
+            }
         });
 
         // Delete achievement
@@ -1371,10 +1396,11 @@
         }
 
         // Initialize
-        // Esperar a que Firebase esté listo antes de cargar
-        setTimeout(async () => {
+        // Esperar a que Firebase esté listo antes de cargar datos
+        window.addEventListener('DOMContentLoaded', async () => {
+            await new Promise(resolve => setTimeout(resolve, 2000));
             await loadData();
-        }, 2000);
+        });
     </script>
 </body>
 </html>
