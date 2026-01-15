@@ -1010,8 +1010,16 @@
             console.log('👤 Usuario actual:', appData.currentUser);
             
             try {
+                // IMPORTANTE: Limpiar datos viejos para forzar carga desde Firebase
+                console.log('🧹 Limpiando datos viejos de localStorage...');
+                appData.posts = [];
+                appData.achievements = [];
+                appData.students = [];
+                appData.institutions = [];
+                appData.teachers = [];
+                
                 // Cargar datos desde Firebase
-                console.log('🔄 Cargando datos desde Firebase...');
+                console.log('🔄 Cargando datos FRESCOS desde Firebase...');
                 
                 const [institutions, teachers, students, posts, achievements] = await Promise.all([
                     window.firebaseConfig.getAllDocuments('institutions'),
@@ -1142,23 +1150,43 @@
         // Delete student
         async function deleteStudent(studentId) {
             if (confirm('¿Estás seguro de eliminar este egresado? Esta acción no se puede deshacer.')) {
-                // Eliminar del array principal
-                appData.students = appData.students.filter(s => s.id !== studentId);
+                console.log('🗑️ Eliminando estudiante ID:', studentId);
                 
-                // Eliminar publicaciones del estudiante
-                if (appData.posts) {
+                try {
+                    // Eliminar de Firebase
+                    console.log('🔄 Eliminando de Firebase...');
+                    await FirebaseIntegration.delete('students', studentId);
+                    console.log('✅ Estudiante eliminado de Firebase');
+                    
+                    // Eliminar publicaciones del estudiante
+                    const studentPosts = appData.posts.filter(p => p.authorId === studentId);
+                    console.log(`📰 Eliminando ${studentPosts.length} posts del estudiante...`);
+                    for (const post of studentPosts) {
+                        await FirebaseIntegration.delete('posts', post.id);
+                    }
+                    
+                    // Eliminar logros del estudiante
+                    const studentAchievements = appData.achievements.filter(a => a.studentId === studentId);
+                    console.log(`🏆 Eliminando ${studentAchievements.length} logros del estudiante...`);
+                    for (const achievement of studentAchievements) {
+                        await FirebaseIntegration.delete('achievements', achievement.id);
+                    }
+                    
+                    // Eliminar del array local
+                    appData.students = appData.students.filter(s => s.id !== studentId);
                     appData.posts = appData.posts.filter(p => p.authorId !== studentId);
-                }
-                
-                // Eliminar logros del estudiante
-                if (appData.achievements) {
                     appData.achievements = appData.achievements.filter(a => a.studentId !== studentId);
+                    
+                    saveData();
+                    loadStudents();
+                    loadPosts();
+                    
+                    console.log('✅ Eliminación completa');
+                    alert('✅ Egresado eliminado exitosamente');
+                } catch (error) {
+                    console.error('❌ Error al eliminar:', error);
+                    alert('❌ Error al eliminar. Revisa la consola.');
                 }
-                
-                saveData();
-                loadStudents();
-                loadPosts();
-                alert('✅ Egresado eliminado exitosamente');
             }
         }
 
@@ -1368,6 +1396,8 @@
         document.getElementById('postForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
+            console.log('📝 Creando publicación del docente...');
+            
             const post = {
                 id: Date.now(),
                 authorId: currentTeacher.id,
@@ -1384,16 +1414,27 @@
                 createdAt: new Date().toISOString()
             };
             
-            if (!appData.posts) appData.posts = [];
-            // Guardar en Firebase
-            await FirebaseIntegration.save('posts', post);
-            appData.posts.unshift(post);
+            console.log('📄 Post creado:', post);
             
-            saveData();
-            loadPosts();
-            closePostModal();
-            clearMedia();
-            alert('✅ Publicación creada exitosamente');
+            if (!appData.posts) appData.posts = [];
+            
+            try {
+                // Guardar en Firebase
+                console.log('💾 Guardando en Firebase...');
+                const result = await FirebaseIntegration.save('posts', post);
+                console.log('✅ Resultado de Firebase:', result);
+                
+                appData.posts.unshift(post);
+                
+                saveData();
+                loadPosts();
+                closePostModal();
+                clearMedia();
+                alert('✅ Publicación creada exitosamente');
+            } catch (error) {
+                console.error('❌ Error al guardar post:', error);
+                alert('❌ Error al crear la publicación. Revisa la consola.');
+            }
         });
 
         // Delete post
@@ -1436,10 +1477,11 @@
         }
 
         // Initialize
-        // Esperar a que Firebase esté listo antes de cargar
-        setTimeout(async () => {
+        // Esperar a que Firebase esté listo antes de cargar datos
+        window.addEventListener('DOMContentLoaded', async () => {
+            await new Promise(resolve => setTimeout(resolve, 2000));
             await loadData();
-        }, 2000);
+        });
     </script>
 </body>
 </html>
