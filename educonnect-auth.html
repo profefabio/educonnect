@@ -1285,18 +1285,23 @@
             e.preventDefault();
 
             if (isLoginMode.institution) {
-                // Login
+                // Login - Buscar en Firebase
                 const email = document.getElementById('inst_email').value;
                 const password = document.getElementById('inst_password').value;
 
-                const institution = appData.institutions.find(i => 
-                    i.email === email && i.password === password
-                );
+                try {
+                    // Buscar en Firebase
+                    const institutions = await window.firebaseConfig.getDocumentsWhere('institutions', 'email', '==', email);
+                    const institution = institutions.find(i => i.password === password);
 
-                if (institution) {
-                    login(institution, 'institution');
-                } else {
-                    showAlert('Credenciales incorrectas', 'error');
+                    if (institution) {
+                        login(institution, 'institution');
+                    } else {
+                        showAlert('Credenciales incorrectas', 'error');
+                    }
+                } catch (error) {
+                    console.error('Error en login:', error);
+                    showAlert('Error al iniciar sesión. Intenta de nuevo.', 'error');
                 }
             } else {
                 // Registro
@@ -1332,18 +1337,23 @@
             e.preventDefault();
 
             if (isLoginMode.teacher) {
-                // Login
+                // Login - Buscar en Firebase
                 const email = document.getElementById('teacher_email').value;
                 const password = document.getElementById('teacher_password').value;
 
-                const teacher = appData.teachers.find(t => 
-                    t.email === email && t.password === password
-                );
+                try {
+                    // Buscar en Firebase
+                    const teachers = await window.firebaseConfig.getDocumentsWhere('teachers', 'email', '==', email);
+                    const teacher = teachers.find(t => t.password === password);
 
-                if (teacher) {
-                    login(teacher, 'teacher');
-                } else {
-                    showAlert('Credenciales incorrectas', 'error');
+                    if (teacher) {
+                        login(teacher, 'teacher');
+                    } else {
+                        showAlert('Credenciales incorrectas', 'error');
+                    }
+                } catch (error) {
+                    console.error('Error en login:', error);
+                    showAlert('Error al iniciar sesión. Intenta de nuevo.', 'error');
                 }
             } else {
                 // Registro
@@ -1375,18 +1385,23 @@
             e.preventDefault();
 
             if (isLoginMode.student) {
-                // Login
+                // Login - Buscar en Firebase
                 const email = document.getElementById('student_email').value;
                 const password = document.getElementById('student_password').value;
 
-                const student = appData.students.find(s => 
-                    s.email === email && s.password === password
-                );
+                try {
+                    // Buscar en Firebase
+                    const students = await window.firebaseConfig.getDocumentsWhere('students', 'email', '==', email);
+                    const student = students.find(s => s.password === password);
 
-                if (student) {
-                    login(student, 'student');
-                } else {
-                    showAlert('Credenciales incorrectas', 'error');
+                    if (student) {
+                        login(student, 'student');
+                    } else {
+                        showAlert('Credenciales incorrectas', 'error');
+                    }
+                } catch (error) {
+                    console.error('Error en login:', error);
+                    showAlert('Error al iniciar sesión. Intenta de nuevo.', 'error');
                 }
             } else {
                 // Registro
