@@ -1101,6 +1101,8 @@
         document.getElementById('profileForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
+            console.log('💾 Guardando perfil de estudiante...');
+            
             currentStudent.name = document.getElementById('name').value;
             currentStudent.email = document.getElementById('email').value;
             currentStudent.phone = document.getElementById('phone').value;
@@ -1110,18 +1112,28 @@
             currentStudent.availability = document.getElementById('availability').value;
             currentStudent.linkedin = document.getElementById('linkedin').value;
             
-            // Update in appData
-            const index = appData.students.findIndex(s => s.id === currentStudent.id);
-            if (index !== -1) {
-                appData.students[index] = currentStudent;
+            try {
+                // Actualizar en Firebase
+                console.log('🔄 Actualizando en Firebase...', currentStudent);
+                const result = await FirebaseIntegration.update('students', currentStudent.id, currentStudent);
+                console.log('✅ Perfil actualizado en Firebase:', result);
+                
+                // Update in appData
+                const index = appData.students.findIndex(s => s.id === currentStudent.id);
+                if (index !== -1) {
+                    appData.students[index] = currentStudent;
+                }
+                
+                // Update currentUser
+                appData.currentUser = { ...currentStudent, type: 'student' };
+                
+                saveData();
+                loadProfile();
+                alert('✅ Perfil actualizado exitosamente');
+            } catch (error) {
+                console.error('❌ Error al actualizar perfil:', error);
+                alert('❌ Error al actualizar perfil. Revisa la consola.');
             }
-            
-            // Update currentUser
-            appData.currentUser = { ...currentStudent, type: 'student' };
-            
-            saveData();
-            loadProfile();
-            alert('✅ Perfil actualizado exitosamente');
         });
 
         // Load posts
