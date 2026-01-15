@@ -1286,21 +1286,34 @@
 
             if (isLoginMode.institution) {
                 // Login - Buscar en Firebase
-                const email = document.getElementById('inst_email').value;
+                const email = document.getElementById('inst_email').value.trim().toLowerCase();
                 const password = document.getElementById('inst_password').value;
 
+                console.log('🔍 Intentando login institución con:', email);
+
                 try {
-                    // Buscar en Firebase
-                    const institutions = await window.firebaseConfig.getDocumentsWhere('institutions', 'email', '==', email);
-                    const institution = institutions.find(i => i.password === password);
+                    // Cargar TODAS las instituciones para comparar (solución temporal)
+                    const allInstitutions = await window.firebaseConfig.getAllDocuments('institutions');
+                    console.log('📋 Instituciones en Firebase:', allInstitutions.length);
+                    
+                    // Buscar por email (case insensitive)
+                    const institution = allInstitutions.find(i => 
+                        i.email.toLowerCase().trim() === email && i.password === password
+                    );
+
+                    console.log('🔎 Institución encontrada:', institution ? 'Sí' : 'No');
 
                     if (institution) {
+                        console.log('✅ Login exitoso para:', institution.name);
                         login(institution, 'institution');
                     } else {
+                        console.log('❌ Credenciales incorrectas');
+                        console.log('📧 Email buscado:', email);
+                        console.log('📋 Emails en Firebase:', allInstitutions.map(i => i.email));
                         showAlert('Credenciales incorrectas', 'error');
                     }
                 } catch (error) {
-                    console.error('Error en login:', error);
+                    console.error('❌ Error en login:', error);
                     showAlert('Error al iniciar sesión. Intenta de nuevo.', 'error');
                 }
             } else {
@@ -1338,21 +1351,45 @@
 
             if (isLoginMode.teacher) {
                 // Login - Buscar en Firebase
-                const email = document.getElementById('teacher_email').value;
+                const email = document.getElementById('teacher_email').value.trim().toLowerCase();
                 const password = document.getElementById('teacher_password').value;
 
+                console.log('🔍 Intentando login docente con:', email);
+
                 try {
-                    // Buscar en Firebase
-                    const teachers = await window.firebaseConfig.getDocumentsWhere('teachers', 'email', '==', email);
-                    const teacher = teachers.find(t => t.password === password);
+                    // Cargar TODOS los docentes
+                    const allTeachers = await window.firebaseConfig.getAllDocuments('teachers');
+                    console.log('📋 Docentes en Firebase:', allTeachers.length);
+                    
+                    // Buscar por email (case insensitive)
+                    const teacher = allTeachers.find(t => 
+                        t.email.toLowerCase().trim() === email && t.password === password
+                    );
+
+                    console.log('🔎 Docente encontrado:', teacher ? 'Sí' : 'No');
+                    
+                    if (!teacher) {
+                        console.log('📋 Docentes disponibles:', allTeachers.map(t => ({
+                            email: t.email,
+                            password: t.password,
+                            name: t.name
+                        })));
+                        console.log('🔍 Comparación:');
+                        allTeachers.forEach(t => {
+                            console.log(`  Email match: "${t.email.toLowerCase().trim()}" === "${email}" = ${t.email.toLowerCase().trim() === email}`);
+                            console.log(`  Pass match: "${t.password}" === "${password}" = ${t.password === password}`);
+                        });
+                    }
 
                     if (teacher) {
+                        console.log('✅ Login exitoso para:', teacher.name);
                         login(teacher, 'teacher');
                     } else {
+                        console.log('❌ Credenciales incorrectas');
                         showAlert('Credenciales incorrectas', 'error');
                     }
                 } catch (error) {
-                    console.error('Error en login:', error);
+                    console.error('❌ Error en login:', error);
                     showAlert('Error al iniciar sesión. Intenta de nuevo.', 'error');
                 }
             } else {
@@ -1386,21 +1423,45 @@
 
             if (isLoginMode.student) {
                 // Login - Buscar en Firebase
-                const email = document.getElementById('student_email').value;
+                const email = document.getElementById('student_email').value.trim().toLowerCase();
                 const password = document.getElementById('student_password').value;
 
+                console.log('🔍 Intentando login estudiante con:', email);
+
                 try {
-                    // Buscar en Firebase
-                    const students = await window.firebaseConfig.getDocumentsWhere('students', 'email', '==', email);
-                    const student = students.find(s => s.password === password);
+                    // Cargar TODOS los estudiantes
+                    const allStudents = await window.firebaseConfig.getAllDocuments('students');
+                    console.log('📋 Estudiantes en Firebase:', allStudents.length);
+                    
+                    // Buscar por email (case insensitive)
+                    const student = allStudents.find(s => 
+                        s.email.toLowerCase().trim() === email && s.password === password
+                    );
+
+                    console.log('🔎 Estudiante encontrado:', student ? 'Sí' : 'No');
+                    
+                    if (!student) {
+                        console.log('📋 Estudiantes disponibles:', allStudents.map(s => ({
+                            email: s.email,
+                            password: s.password,
+                            name: s.name
+                        })));
+                        console.log('🔍 Comparación:');
+                        allStudents.forEach(s => {
+                            console.log(`  Email match: "${s.email.toLowerCase().trim()}" === "${email}" = ${s.email.toLowerCase().trim() === email}`);
+                            console.log(`  Pass match: "${s.password}" === "${password}" = ${s.password === password}`);
+                        });
+                    }
 
                     if (student) {
+                        console.log('✅ Login exitoso para:', student.name);
                         login(student, 'student');
                     } else {
+                        console.log('❌ Credenciales incorrectas');
                         showAlert('Credenciales incorrectas', 'error');
                     }
                 } catch (error) {
-                    console.error('Error en login:', error);
+                    console.error('❌ Error en login:', error);
                     showAlert('Error al iniciar sesión. Intenta de nuevo.', 'error');
                 }
             } else {
