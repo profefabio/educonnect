@@ -987,25 +987,86 @@
         }
 
         // Load data
-        function loadData() {
+        async function loadData() {
+            console.log('📥 Cargando datos del dashboard...');
+            
+            // Cargar datos de localStorage primero para obtener currentUser
             const saved = localStorage.getItem('eduConnectData');
-            if (saved) {
-                appData = JSON.parse(saved);
+            if (!saved) {
+                console.log('❌ No hay sesión activa');
+                window.location.href = 'educonnect-auth.html';
+                return;
+            }
+            
+            appData = JSON.parse(saved);
+            
+            // Verificar que hay usuario logueado y es docente
+            if (!appData.currentUser || appData.currentUser.type !== 'teacher') {
+                console.log('❌ Usuario no es docente');
+                window.location.href = 'educonnect-auth.html';
+                return;
+            }
+            
+            console.log('👤 Usuario actual:', appData.currentUser);
+            
+            try {
+                // Cargar datos desde Firebase
+                console.log('🔄 Cargando datos desde Firebase...');
                 
-                // Verificar que hay usuario logueado y es docente
-                if (!appData.currentUser || appData.currentUser.type !== 'teacher') {
-                    window.location.href = 'educonnect-auth.html';
-                    return;
+                const [institutions, teachers, students, posts, achievements] = await Promise.all([
+                    window.firebaseConfig.getAllDocuments('institutions'),
+                    window.firebaseConfig.getAllDocuments('teachers'),
+                    window.firebaseConfig.getAllDocuments('students'),
+                    window.firebaseConfig.getAllDocuments('posts'),
+                    window.firebaseConfig.getAllDocuments('achievements')
+                ]);
+                
+                // Actualizar appData con datos de Firebase
+                appData.institutions = institutions;
+                appData.teachers = teachers;
+                appData.students = students;
+                appData.posts = posts || [];
+                appData.achievements = achievements || [];
+                
+                console.log('✅ Datos cargados desde Firebase');
+                console.log(`  📊 Instituciones: ${institutions.length}`);
+                console.log(`  👨‍🏫 Docentes: ${teachers.length}`);
+                console.log(`  🎓 Estudiantes: ${students.length}`);
+                console.log(`  📰 Posts: ${posts.length}`);
+                
+                // Buscar el docente actual (por id o por email como fallback)
+                console.log('🔍 Buscando docente con ID:', appData.currentUser.id);
+                console.log('📋 Docentes disponibles:', appData.teachers.map(t => ({id: t.id, email: t.email, name: t.name})));
+                
+                currentTeacher = appData.teachers.find(t => t.id === appData.currentUser.id);
+                
+                // Fallback: buscar por email si no se encuentra por ID
+                if (!currentTeacher && appData.currentUser.email) {
+                    console.log('⚠️ No encontrado por ID, buscando por email:', appData.currentUser.email);
+                    currentTeacher = appData.teachers.find(t => t.email === appData.currentUser.email);
                 }
                 
+                if (currentTeacher) {
+                    console.log('✅ Docente encontrado:', currentTeacher.name);
+                    loadUserInfo();
+                    loadStudents();
+                    loadPosts();
+                } else {
+                    console.error('❌ Docente no encontrado en Firebase');
+                    window.location.href = 'educonnect-auth.html';
+                }
+                
+            } catch (error) {
+                console.error('❌ Error cargando datos de Firebase:', error);
+                // Intentar con localStorage como fallback
                 currentTeacher = appData.teachers.find(t => t.id === appData.currentUser.id);
                 if (currentTeacher) {
                     loadUserInfo();
                     loadStudents();
                     loadPosts();
+                } else {
+                    window.location.href = 'educonnect-auth.html';
                 }
-            } else {
-                window.location.href = 'educonnect-auth.html';
             }
         }
 
@@ -1375,7 +1436,10 @@
         }
 
         // Initialize
-        loadData();
+        // Esperar a que Firebase esté listo antes de cargar
+        setTimeout(async () => {
+            await loadData();
+        }, 2000);
     </script>
 </body>
 </html>
