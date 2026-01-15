@@ -599,10 +599,12 @@
     <!-- Firebase SDK v9 (Compat mode) -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
     
     <!-- Configuración de Firebase -->
     <script src="firebase-config.js"></script>
     <script src="firebase-integration.js"></script>
+    <script src="firebase-storage.js"></script>
 </head>
 <body>
     <!-- Header -->
@@ -1434,7 +1436,7 @@
                 teacherName: currentTeacher.name
             });
             
-            // Crear objeto media solo si hay archivos
+            // Crear objeto media para localStorage (con multimedia)
             let mediaObject = null;
             if (selectedMediaFiles.images.length > 0 || 
                 selectedMediaFiles.video !== null || 
@@ -1446,7 +1448,8 @@
                 };
             }
             
-            const post = {
+            // Post COMPLETO (con multimedia) para localStorage y UI
+            const postCompleto = {
                 id: Date.now(),
                 authorId: currentTeacher.id,
                 authorName: currentTeacher.name,
@@ -1457,13 +1460,26 @@
                 createdAt: new Date().toISOString()
             };
             
-            // Solo agregar media si existe
             if (mediaObject) {
-                post.media = mediaObject;
+                postCompleto.media = mediaObject;
             }
             
-            console.log('📄 Post creado:', post);
+            // Post SIMPLE (sin multimedia) para Firebase
+            const postFirebase = {
+                id: postCompleto.id,
+                authorId: postCompleto.authorId,
+                authorName: postCompleto.authorName,
+                authorType: postCompleto.authorType,
+                title: postCompleto.title,
+                category: postCompleto.category,
+                content: postCompleto.content,
+                createdAt: postCompleto.createdAt,
+                hasMedia: mediaObject !== null  // Indicador de que tiene multimedia
+            };
+            
+            console.log('📄 Post creado:', postCompleto);
             console.log('📄 Tiene multimedia?', mediaObject ? 'Sí' : 'No');
+            console.log('⚠️ Nota: Multimedia se guarda solo en localStorage, no en Firebase');
             
             if (!appData.posts) {
                 console.log('⚠️ Inicializando appData.posts...');
@@ -1471,11 +1487,11 @@
             }
             
             try {
-                // Guardar en Firebase
-                console.log('💾 Guardando en Firebase...');
-                console.log('🔄 Llamando FirebaseIntegration.save...');
+                // Guardar en Firebase SIN multimedia
+                console.log('💾 Guardando en Firebase (sin multimedia)...');
+                console.log('🔄 Post para Firebase:', postFirebase);
                 
-                const result = await FirebaseIntegration.save('posts', post);
+                const result = await FirebaseIntegration.save('posts', postFirebase);
                 
                 console.log('✅ Resultado de Firebase:', result);
                 
@@ -1483,13 +1499,13 @@
                     throw new Error('Firebase devolvió null - el post no se guardó');
                 }
                 
-                // Agregar a array local
-                console.log('➕ Agregando a appData.posts...');
-                appData.posts.unshift(post);
+                // Agregar post COMPLETO (con multimedia) a array local
+                console.log('➕ Agregando post completo a appData.posts...');
+                appData.posts.unshift(postCompleto);
                 console.log('📊 Posts ahora:', appData.posts.length);
                 
-                // Guardar en localStorage
-                console.log('💾 Guardando en localStorage...');
+                // Guardar en localStorage (con multimedia)
+                console.log('💾 Guardando en localStorage (con multimedia)...');
                 saveData();
                 
                 // Recargar posts
@@ -1502,7 +1518,8 @@
                 clearMedia();
                 
                 console.log('🎉 ¡Publicación creada exitosamente!');
-                alert('✅ Publicación creada exitosamente');
+                console.log('⚠️ Nota: La multimedia solo está disponible en este dispositivo');
+                alert('✅ Publicación creada exitosamente\n\n⚠️ Nota: Las imágenes/archivos solo se ven en este dispositivo');
                 
             } catch (error) {
                 console.error('❌ Error al guardar post:', error);
