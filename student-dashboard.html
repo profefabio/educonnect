@@ -994,7 +994,16 @@
                 }
                 
                 // Cargar datos del estudiante
-                currentStudent = appData.students.find(s => s.id === appData.currentUser.id);
+                console.log('🔍 Buscando estudiante con ID:', appData.currentUser.id);
+            console.log('📋 Estudiantes disponibles:', appData.students.map(s => ({id: s.id, email: s.email, name: s.name})));
+            
+            currentStudent = appData.students.find(s => s.id === appData.currentUser.id);
+            
+            // Fallback: buscar por email si no se encuentra por ID
+            if (!currentStudent && appData.currentUser.email) {
+                console.log('⚠️ No encontrado por ID, buscando por email:', appData.currentUser.email);
+                currentStudent = appData.students.find(s => s.email === appData.currentUser.email);
+            }
                 if (currentStudent) {
                     loadProfile();
                     loadPosts();
@@ -1301,7 +1310,10 @@
         }
 
         // Initialize
-        loadData();
+        // Esperar a que Firebase esté listo antes de cargar
+        setTimeout(async () => {
+            await loadData();
+        }, 2000);
     </script>
 </body>
 </html>
