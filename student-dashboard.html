@@ -982,32 +982,63 @@
         }
 
         // Load data
-        function loadData() {
+        async function loadData() {
             const saved = localStorage.getItem('eduConnectData');
             if (saved) {
                 appData = JSON.parse(saved);
                 
                 // Verificar que hay usuario logueado y es estudiante
                 if (!appData.currentUser || appData.currentUser.type !== 'student') {
+                    console.log('❌ Usuario no es estudiante');
                     window.location.href = 'educonnect-auth.html';
                     return;
                 }
                 
-                // Cargar datos del estudiante
-                console.log('🔍 Buscando estudiante con ID:', appData.currentUser.id);
-            console.log('📋 Estudiantes disponibles:', appData.students.map(s => ({id: s.id, email: s.email, name: s.name})));
-            
-            currentStudent = appData.students.find(s => s.id === appData.currentUser.id);
-            
-            // Fallback: buscar por email si no se encuentra por ID
-            if (!currentStudent && appData.currentUser.email) {
-                console.log('⚠️ No encontrado por ID, buscando por email:', appData.currentUser.email);
-                currentStudent = appData.students.find(s => s.email === appData.currentUser.email);
-            }
-                if (currentStudent) {
-                    loadProfile();
-                    loadPosts();
-                    loadAchievements();
+                console.log('👤 Usuario actual:', appData.currentUser);
+                
+                try {
+                    // Cargar datos desde Firebase
+                    console.log('🔄 Cargando datos desde Firebase...');
+                    
+                    const [institutions, teachers, students, posts, achievements] = await Promise.all([
+                        window.firebaseConfig.getAllDocuments('institutions'),
+                        window.firebaseConfig.getAllDocuments('teachers'),
+                        window.firebaseConfig.getAllDocuments('students'),
+                        window.firebaseConfig.getAllDocuments('posts'),
+                        window.firebaseConfig.getAllDocuments('achievements')
+                    ]);
+                    
+                    // Actualizar appData con datos de Firebase
+                    appData.institutions = institutions;
+                    appData.teachers = teachers;
+                    appData.students = students;
+                    appData.posts = posts || [];
+                    appData.achievements = achievements || [];
+                    
+                    console.log('✅ Datos cargados desde Firebase');
+                    console.log(`  📊 Instituciones: ${institutions.length}`);
+                    console.log(`  👨‍🏫 Docentes: ${teachers.length}`);
+                    console.log(`  🎓 Estudiantes: ${students.length}`);
+                    console.log(`  📰 Posts: ${posts.length}`);
+                    console.log(`  🏆 Logros: ${achievements.length}`);
+                    
+                    // Buscar el estudiante actual
+                    console.log('🔍 Buscando estudiante con ID:', appData.currentUser.id);
+                    console.log('📋 Estudiantes disponibles:', appData.students.map(s => ({id: s.id, email: s.email, name: s.name})));
+                    
+                    currentStudent = appData.students.find(s => s.id === appData.currentUser.id);
+                    
+                    // Fallback: buscar por email si no se encuentra por ID
+                    if (!currentStudent && appData.currentUser.email) {
+                        console.log('⚠️ No encontrado por ID, buscando por email:', appData.currentUser.email);
+                        currentStudent = appData.students.find(s => s.email === appData.currentUser.email);
+                    }
+                    
+                    if (currentStudent) {
+                        console.log('✅ Estudiante encontrado:', currentStudent.name);
+                        loadProfile();
+                        loadPosts();
+                        loadAchievements();
                 }
             } else {
                 window.location.href = 'educonnect-auth.html';
