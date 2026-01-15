@@ -595,6 +595,14 @@
             }
         }
     </style>
+    
+    <!-- Firebase SDK v9 (Compat mode) -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    
+    <!-- Configuración de Firebase -->
+    <script src="firebase-config.js"></script>
+    <script src="firebase-integration.js"></script>
 </head>
 <body>
     <div class="container" id="authContainer">
@@ -1287,6 +1295,8 @@
                     createdAt: new Date().toISOString()
                 };
 
+                // Guardar en Firebase
+                await FirebaseIntegration.save('institutions', institution);
                 appData.institutions.push(institution);
                 saveData();
                 updateLocationSelects();
@@ -1329,6 +1339,8 @@
                     createdAt: new Date().toISOString()
                 };
 
+                // Guardar en Firebase
+                await FirebaseIntegration.save('teachers', teacher);
                 appData.teachers.push(teacher);
                 saveData();
                 showAlert('✅ Docente registrado exitosamente. Ahora puedes iniciar sesión.', 'success');
@@ -1376,6 +1388,8 @@
                     createdAt: new Date().toISOString()
                 };
 
+                // Guardar en Firebase
+                await FirebaseIntegration.save('students', student);
                 appData.students.push(student);
                 saveData();
                 showAlert('✅ Estudiante registrado exitosamente. Ahora puedes iniciar sesión.', 'success');
