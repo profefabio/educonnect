@@ -1434,6 +1434,18 @@
                 teacherName: currentTeacher.name
             });
             
+            // Crear objeto media solo si hay archivos
+            let mediaObject = null;
+            if (selectedMediaFiles.images.length > 0 || 
+                selectedMediaFiles.video !== null || 
+                selectedMediaFiles.files.length > 0) {
+                mediaObject = {
+                    images: [...selectedMediaFiles.images],
+                    video: selectedMediaFiles.video,
+                    files: [...selectedMediaFiles.files]
+                };
+            }
+            
             const post = {
                 id: Date.now(),
                 authorId: currentTeacher.id,
@@ -1442,23 +1454,16 @@
                 title: document.getElementById('postTitle').value,
                 category: document.getElementById('postCategory').value,
                 content: document.getElementById('postContent').value,
-                media: {
-                    images: [...selectedMediaFiles.images],
-                    video: selectedMediaFiles.video,
-                    files: [...selectedMediaFiles.files]
-                },
                 createdAt: new Date().toISOString()
             };
             
+            // Solo agregar media si existe
+            if (mediaObject) {
+                post.media = mediaObject;
+            }
+            
             console.log('📄 Post creado:', post);
-            console.log('📄 Detalles del post:', {
-                id: post.id,
-                authorId: post.authorId,
-                authorName: post.authorName,
-                title: post.title,
-                category: post.category,
-                contentLength: post.content.length
-            });
+            console.log('📄 Tiene multimedia?', mediaObject ? 'Sí' : 'No');
             
             if (!appData.posts) {
                 console.log('⚠️ Inicializando appData.posts...');
@@ -1473,10 +1478,9 @@
                 const result = await FirebaseIntegration.save('posts', post);
                 
                 console.log('✅ Resultado de Firebase:', result);
-                console.log('✅ Tipo de resultado:', typeof result);
                 
                 if (!result) {
-                    console.warn('⚠️ Firebase devolvió null o undefined');
+                    throw new Error('Firebase devolvió null - el post no se guardó');
                 }
                 
                 // Agregar a array local
@@ -1505,7 +1509,7 @@
                 console.error('❌ Tipo de error:', error.constructor.name);
                 console.error('❌ Mensaje:', error.message);
                 console.error('❌ Stack:', error.stack);
-                alert('❌ Error al crear la publicación. Revisa la consola para más detalles.');
+                alert('❌ Error al crear la publicación: ' + error.message);
             }
         });
 
