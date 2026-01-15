@@ -1264,7 +1264,7 @@
         }
 
         // Registro de Institución
-        document.getElementById('institutionForm').addEventListener('submit', function(e) {
+        document.getElementById('institutionForm').addEventListener('submit', async function(e) {
             e.preventDefault();
 
             if (isLoginMode.institution) {
@@ -1311,7 +1311,7 @@
         });
 
         // Registro de Docente
-        document.getElementById('teacherForm').addEventListener('submit', function(e) {
+        document.getElementById('teacherForm').addEventListener('submit', async function(e) {
             e.preventDefault();
 
             if (isLoginMode.teacher) {
@@ -1354,7 +1354,7 @@
         });
 
         // Registro de Estudiante
-        document.getElementById('studentForm').addEventListener('submit', function(e) {
+        document.getElementById('studentForm').addEventListener('submit', async function(e) {
             e.preventDefault();
 
             if (isLoginMode.student) {
