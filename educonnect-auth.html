@@ -896,7 +896,24 @@
         };
 
         // Cargar datos
-        function loadData() {
+        async function loadData() {
+            // Primero intentar cargar desde Firebase
+            try {
+                if (window.FirebaseIntegration) {
+                    console.log('📥 Cargando instituciones desde Firebase...');
+                    const institutions = await window.firebaseConfig.getAllDocuments('institutions');
+                    if (institutions && institutions.length > 0) {
+                        appData.institutions = institutions;
+                        console.log(`✅ ${institutions.length} instituciones cargadas desde Firebase`);
+                        updateLocationSelects();
+                        return;
+                    }
+                }
+            } catch (error) {
+                console.warn('Error cargando desde Firebase, usando localStorage:', error);
+            }
+            
+            // Fallback: cargar desde localStorage
             const saved = localStorage.getItem('eduConnectData');
             if (saved) {
                 appData = JSON.parse(saved);
@@ -1448,7 +1465,12 @@
         }
 
         // Inicializar
-        loadData();
+        // Cargar datos cuando la página esté lista
+        window.addEventListener('DOMContentLoaded', async () => {
+            // Esperar a que Firebase esté listo
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            await loadData();
+        });
         checkSession();
         
         // Detectar si viene con parámetro mode=login
