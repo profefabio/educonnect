@@ -1039,6 +1039,25 @@
                         loadProfile();
                         loadPosts();
                         loadAchievements();
+                    } else {
+                        console.error('❌ Estudiante no encontrado en Firebase');
+                        window.location.href = 'educonnect-auth.html';
+                    }
+                    
+                } catch (error) {
+                    console.error('❌ Error cargando datos de Firebase:', error);
+                    // Intentar con localStorage como fallback
+                    currentStudent = appData.students.find(s => s.id === appData.currentUser.id);
+                    if (!currentStudent && appData.currentUser.email) {
+                        currentStudent = appData.students.find(s => s.email === appData.currentUser.email);
+                    }
+                    if (currentStudent) {
+                        loadProfile();
+                        loadPosts();
+                        loadAchievements();
+                    } else {
+                        window.location.href = 'educonnect-auth.html';
+                    }
                 }
             } else {
                 window.location.href = 'educonnect-auth.html';
