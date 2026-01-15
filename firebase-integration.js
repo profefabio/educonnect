@@ -7,51 +7,32 @@
     'use strict';
     
     console.log('🔥 Cargando Firebase Integration...');
-    console.log('⏳ Esperando a que Firebase esté completamente inicializado...');
     
     let firebaseReady = false;
     
-    // Esperar a que Firebase y firebaseConfig estén disponibles
-    async function waitForFirebase() {
-        return new Promise((resolve) => {
-            const check = () => {
-                if (window.firebaseConfig && window.appData) {
-                    resolve(true);
-                } else {
-                    setTimeout(check, 100);
-                }
-            };
-            check();
-        });
+    // Verificar si Firebase ya está inicializado
+    function checkFirebaseReady() {
+        return window.firebaseConfig && 
+               typeof window.firebaseConfig.getDb === 'function' && 
+               window.firebaseConfig.getDb() !== undefined;
     }
     
-    // Inicializar Firebase y cargar datos
-    async function initialize() {
-        try {
-            await waitForFirebase();
-            console.log('✅ Firebase config detectado');
-            
-            // Esperar a que Firebase se inicialice (puede tomar un momento)
-            let attempts = 0;
-            while (!window.firebaseConfig.getDb() && attempts < 50) {
-                await new Promise(resolve => setTimeout(resolve, 100));
-                attempts++;
-            }
-            
-            if (window.firebaseConfig.getDb()) {
-                console.log('✅ Firebase completamente inicializado');
-                firebaseReady = true;
-                
-                // Cargar datos desde Firebase
-                await loadAllFromFirebase();
-                
-                return true;
-            } else {
-                console.error('❌ Timeout esperando Firebase');
-                return false;
-            }
-        } catch (error) {
-            console.error('Error en initialize:', error);
+    // Esperar a que Firebase esté completamente listo
+    async function waitForFirebaseReady() {
+        console.log('⏳ Esperando a que Firebase esté listo...');
+        
+        let attempts = 0;
+        while (!checkFirebaseReady() && attempts < 100) {
+            await new Promise(resolve => setTimeout(resolve, 100));
+            attempts++;
+        }
+        
+        if (checkFirebaseReady()) {
+            firebaseReady = true;
+            console.log('✅ Firebase está completamente listo y operativo');
+            return true;
+        } else {
+            console.error('❌ Timeout esperando a que Firebase esté listo');
             return false;
         }
     }
@@ -97,17 +78,14 @@
         
         // Guardar en Firebase
         save: async function(collection, data) {
-            // Esperar hasta que Firebase esté listo (max 10 segundos)
-            let attempts = 0;
-            while (!firebaseReady && attempts < 100) {
-                await new Promise(resolve => setTimeout(resolve, 100));
-                attempts++;
-            }
-            
+            // Si firebaseReady aún no está en true, verificar ahora
             if (!firebaseReady) {
-                console.warn('⏳ Firebase no listo después de 10 segundos. Guardando solo en localStorage. Verifica que firebase-config.js esté cargando correctamente.');
-                localStorage.setItem('eduConnectData', JSON.stringify(window.appData));
-                return null;
+                const isReady = await waitForFirebaseReady();
+                if (!isReady) {
+                    console.warn('⏳ Firebase no disponible. Guardando solo en localStorage.');
+                    localStorage.setItem('eduConnectData', JSON.stringify(window.appData));
+                    return null;
+                }
             }
             
             try {
@@ -119,18 +97,21 @@
                 
                 return docId;
             } catch (error) {
-                console.error(`Error guardando en ${collection}:`, error);
+                console.error(`❌ Error guardando en ${collection}:`, error);
                 // Guardar al menos en localStorage
                 localStorage.setItem('eduConnectData', JSON.stringify(window.appData));
-                throw error;
+                return null;
             }
         },
         
         // Actualizar en Firebase
         update: async function(collection, id, data) {
             if (!firebaseReady) {
-                console.warn('Firebase no listo');
-                return false;
+                const isReady = await waitForFirebaseReady();
+                if (!isReady) {
+                    console.warn('⏳ Firebase no disponible');
+                    return false;
+                }
             }
             
             try {
@@ -146,7 +127,7 @@
                 }
                 return false;
             } catch (error) {
-                console.error(`Error actualizando ${collection}:`, error);
+                console.error(`❌ Error actualizando ${collection}:`, error);
                 return false;
             }
         },
@@ -154,8 +135,11 @@
         // Eliminar de Firebase
         delete: async function(collection, id) {
             if (!firebaseReady) {
-                console.warn('Firebase no listo');
-                return false;
+                const isReady = await waitForFirebaseReady();
+                if (!isReady) {
+                    console.warn('⏳ Firebase no disponible');
+                    return false;
+                }
             }
             
             try {
@@ -171,7 +155,7 @@
                 }
                 return false;
             } catch (error) {
-                console.error(`Error eliminando de ${collection}:`, error);
+                console.error(`❌ Error eliminando de ${collection}:`, error);
                 return false;
             }
         },
@@ -185,13 +169,20 @@
         }
     };
     
-    // Inicializar con retraso para asegurar que todo esté listo
+    // Inicializar cuando el DOM esté listo
+    async function init() {
+        const ready = await waitForFirebaseReady();
+        if (ready) {
+            await loadAllFromFirebase();
+        }
+    }
+    
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', () => {
-            setTimeout(initialize, 1000); // Esperar 1 segundo adicional
+            setTimeout(init, 1500); // Esperar 1.5 segundos
         });
     } else {
-        setTimeout(initialize, 1000);
+        setTimeout(init, 1500);
     }
     
     console.log('✅ Firebase Integration cargado');
