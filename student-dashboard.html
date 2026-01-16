@@ -578,10 +578,12 @@
     <!-- Firebase SDK v9 (Compat mode) -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
     
     <!-- Configuración de Firebase -->
     <script src="firebase-config.js"></script>
     <script src="firebase-integration.js"></script>
+    <script src="firebase-storage.js"></script>
 </head>
 <body>
     <!-- Header -->
@@ -1234,6 +1236,18 @@
             
             console.log('📝 Creando nueva publicación...');
             
+            // VERIFICAR SI HAY MULTIMEDIA
+            const hasMedia = selectedMediaFiles.images.length > 0 || 
+                            selectedMediaFiles.video !== null || 
+                            selectedMediaFiles.files.length > 0;
+            
+            if (hasMedia) {
+                alert('⚠️ MULTIMEDIA DESHABILITADA TEMPORALMENTE\n\n' +
+                      'Para guardar imágenes/videos necesitas que el docente active Firebase Storage.\n\n' +
+                      'Por ahora, crea el post SIN multimedia.');
+                return;
+            }
+            
             const post = {
                 id: Date.now(),
                 authorId: currentStudent.id,
@@ -1242,15 +1256,10 @@
                 title: document.getElementById('postTitle').value,
                 category: document.getElementById('postCategory').value,
                 content: document.getElementById('postContent').value,
-                media: {
-                    images: [...selectedMediaFiles.images],
-                    video: selectedMediaFiles.video,
-                    files: [...selectedMediaFiles.files]
-                },
                 createdAt: new Date().toISOString()
             };
             
-            console.log('📄 Post creado:', post);
+            console.log('📄 Post creado (sin multimedia):', post);
             
             if (!appData.posts) appData.posts = [];
             
@@ -1259,6 +1268,10 @@
                 console.log('💾 Guardando en Firebase...');
                 const result = await FirebaseIntegration.save('posts', post);
                 console.log('✅ Resultado de Firebase:', result);
+                
+                if (!result) {
+                    throw new Error('Firebase devolvió null');
+                }
                 
                 appData.posts.unshift(post);
                 
@@ -1269,7 +1282,7 @@
                 alert('✅ Publicación creada exitosamente');
             } catch (error) {
                 console.error('❌ Error al guardar:', error);
-                alert('❌ Error al crear la publicación. Revisa la consola.');
+                alert('❌ Error al crear la publicación: ' + error.message);
             }
         });
 
