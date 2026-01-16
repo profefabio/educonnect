@@ -1498,30 +1498,39 @@
         // Login
         function login(user, type) {
             appData.currentUser = { ...user, type };
+            console.log('💾 Guardando sesión:', appData.currentUser);
             saveData();
+            
+            // Verificar que se guardó
+            const saved = localStorage.getItem('eduConnectData');
+            const parsed = JSON.parse(saved);
+            console.log('✅ Sesión guardada, currentUser:', parsed.currentUser);
 
-            // Redirigir según el tipo de usuario
-            if (type === 'teacher') {
-                // Docentes van al dashboard de docentes
-                window.location.href = 'teacher-dashboard.html';
-            } else if (type === 'student') {
-                // Estudiantes van al dashboard de estudiantes
-                window.location.href = 'student-dashboard.html';
-            } else if (type === 'institution') {
-                // Instituciones van a la página interna
-                document.getElementById('authContainer').style.display = 'none';
-                document.getElementById('appContainer').classList.add('active');
+            // Pequeño delay para asegurar que localStorage se sincroniza
+            setTimeout(() => {
+                // Redirigir según el tipo de usuario
+                if (type === 'teacher') {
+                    console.log('🔄 Redirigiendo a teacher-dashboard...');
+                    window.location.href = 'teacher-dashboard.html';
+                } else if (type === 'student') {
+                    console.log('🔄 Redirigiendo a student-dashboard...');
+                    window.location.href = 'student-dashboard.html';
+                } else if (type === 'institution') {
+                    // Instituciones van a la página interna
+                    document.getElementById('authContainer').style.display = 'none';
+                    document.getElementById('appContainer').classList.add('active');
 
-                const initials = user.name.split(' ').map(n => n[0]).join('').toUpperCase();
-                document.getElementById('userAvatar').textContent = initials;
-                document.getElementById('userName').textContent = user.name;
-                
-                document.getElementById('userRole').textContent = 'Institución';
+                    const initials = user.name.split(' ').map(n => n[0]).join('').toUpperCase();
+                    document.getElementById('userAvatar').textContent = initials;
+                    document.getElementById('userName').textContent = user.name;
+                    
+                    document.getElementById('userRole').textContent = 'Institución';
 
-                document.getElementById('welcomeTitle').textContent = `¡Bienvenido, ${user.name}!`;
-                document.getElementById('welcomeMessage').textContent = 
-                    'Gestiona tu institución y conecta con docentes y egresados';
-            }
+                    document.getElementById('welcomeTitle').textContent = `¡Bienvenido, ${user.name}!`;
+                    document.getElementById('welcomeMessage').textContent = 
+                        'Gestiona tu institución y conecta con docentes y egresados';
+                }
+            }, 100);
         }
 
         // Logout
