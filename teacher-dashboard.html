@@ -1343,35 +1343,38 @@
                 // Generar HTML para multimedia
                 let mediaHTML = '';
                 if (post.media) {
-                    // Imágenes
+                    // Imágenes desde Storage (usar .url en lugar de .data)
                     if (post.media.images && post.media.images.length > 0) {
                         mediaHTML += '<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; margin: 15px 0;">';
                         post.media.images.forEach(img => {
-                            mediaHTML += `<img src="${img.data}" alt="${img.name}" style="width: 100%; height: 150px; object-fit: cover; border-radius: 8px; cursor: pointer;" onclick="window.open('${img.data}', '_blank')">`;
+                            const imgUrl = img.url || img.data; // Usar URL de Storage o fallback a data
+                            mediaHTML += `<img src="${imgUrl}" alt="${img.name}" style="width: 100%; height: 150px; object-fit: cover; border-radius: 8px; cursor: pointer;" onclick="window.open('${imgUrl}', '_blank')">`;
                         });
                         mediaHTML += '</div>';
                     }
                     
-                    // Video
+                    // Video desde Storage
                     if (post.media.video) {
+                        const videoUrl = post.media.video.url || post.media.video.data;
                         mediaHTML += `
                             <video controls style="width: 100%; max-height: 300px; border-radius: 8px; margin: 15px 0;">
-                                <source src="${post.media.video.data}" type="${post.media.video.type}">
+                                <source src="${videoUrl}" type="${post.media.video.type}">
                                 Tu navegador no soporta el elemento de video.
                             </video>
                         `;
                     }
                     
-                    // Archivos
+                    // Archivos desde Storage
                     if (post.media.files && post.media.files.length > 0) {
                         mediaHTML += '<div style="margin: 15px 0;">';
                         post.media.files.forEach(file => {
+                            const fileUrl = file.url || file.data;
                             const icon = file.name.endsWith('.pdf') ? '📄' : 
                                         file.name.match(/\.(doc|docx)$/) ? '📝' : 
                                         file.name.match(/\.(xls|xlsx)$/) ? '📊' : 
                                         file.name.match(/\.(ppt|pptx)$/) ? '📽️' : '📎';
                             mediaHTML += `
-                                <a href="${file.data}" download="${file.name}" style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 12px; background: #f5f7fa; border-radius: 6px; text-decoration: none; color: #333; margin: 5px; font-size: 0.9em;">
+                                <a href="${fileUrl}" download="${file.name}" target="_blank" style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 12px; background: #f5f7fa; border-radius: 6px; text-decoration: none; color: #333; margin: 5px; font-size: 0.9em;">
                                     <span style="font-size: 1.2em;">${icon}</span>
                                     <span>${file.name}</span>
                                 </a>
