@@ -1430,49 +1430,72 @@
                 return;
             }
             
-            // VERIFICAR SI HAY MULTIMEDIA
+            // Verificar si hay multimedia
             const hasMedia = selectedMediaFiles.images.length > 0 || 
                             selectedMediaFiles.video !== null || 
                             selectedMediaFiles.files.length > 0;
             
-            if (hasMedia) {
-                alert('⚠️ MULTIMEDIA DESHABILITADA TEMPORALMENTE\n\n' +
-                      'Para guardar imágenes/videos necesitas:\n' +
-                      '1. Activar Firebase Storage en console.firebase.google.com\n' +
-                      '2. Subir firebase-storage.js a GitHub\n' +
-                      '3. Seguir la guía GUIA-FIREBASE-STORAGE.md\n\n' +
-                      'Por ahora, crea el post SIN multimedia.');
-                return;
-            }
-            
-            console.log('📊 Estado antes de crear:', {
-                postsActuales: appData.posts.length,
-                teacherId: currentTeacher.id,
-                teacherName: currentTeacher.name
-            });
-            
-            const post = {
-                id: Date.now(),
-                authorId: currentTeacher.id,
-                authorName: currentTeacher.name,
-                authorType: 'teacher',
-                title: document.getElementById('postTitle').value,
-                category: document.getElementById('postCategory').value,
-                content: document.getElementById('postContent').value,
-                createdAt: new Date().toISOString()
-            };
-            
-            console.log('📄 Post creado (sin multimedia):', post);
-            
-            if (!appData.posts) {
-                appData.posts = [];
-            }
+            const postId = Date.now();
+            let uploadedMedia = null;
             
             try {
-                // Guardar en Firebase
-                console.log('💾 Guardando en Firebase...');
+                // Si hay multimedia, subirla a Firebase Storage
+                if (hasMedia) {
+                    console.log('📤 Subiendo multimedia a Firebase Storage...');
+                    
+                    // Mostrar mensaje de progreso
+                    const progressMsg = document.createElement('div');
+                    progressMsg.id = 'uploadProgress';
+                    progressMsg.style.cssText = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 30px; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.3); z-index: 10000; text-align: center;';
+                    progressMsg.innerHTML = '<p style="font-size: 1.2em; margin-bottom: 10px;">📤 Subiendo multimedia...</p><p id="progressText">0/0</p>';
+                    document.body.appendChild(progressMsg);
+                    
+                    uploadedMedia = await window.firebaseStorageManager.uploadPostMedia(
+                        postId,
+                        selectedMediaFiles,
+                        (current, total, item) => {
+                            console.log(`📤 Progreso: ${current}/${total} - ${item}`);
+                            const progressText = document.getElementById('progressText');
+                            if (progressText) {
+                                progressText.textContent = `${current}/${total} - ${item}`;
+                            }
+                        }
+                    );
+                    
+                    const progressEl = document.getElementById('uploadProgress');
+                    if (progressEl) {
+                        document.body.removeChild(progressEl);
+                    }
+                    console.log('✅ Multimedia subida:', uploadedMedia);
+                }
+                
+                // Crear el post
+                const post = {
+                    id: postId,
+                    authorId: currentTeacher.id,
+                    authorName: currentTeacher.name,
+                    authorType: 'teacher',
+                    title: document.getElementById('postTitle').value,
+                    category: document.getElementById('postCategory').value,
+                    content: document.getElementById('postContent').value,
+                    createdAt: new Date().toISOString()
+                };
+                
+                // Agregar media solo si se subió
+                if (uploadedMedia) {
+                    post.media = uploadedMedia;
+                }
+                
+                console.log('📄 Post creado:', post);
+                
+                if (!appData.posts) {
+                    appData.posts = [];
+                }
+                
+                // Guardar post en Firestore
+                console.log('💾 Guardando post en Firestore...');
                 const result = await FirebaseIntegration.save('posts', post);
-                console.log('✅ Resultado de Firebase:', result);
+                console.log('✅ Resultado de Firestore:', result);
                 
                 if (!result) {
                     throw new Error('Firebase devolvió null');
@@ -1489,19 +1512,44 @@
                 alert('✅ Publicación creada exitosamente');
                 
             } catch (error) {
-                console.error('❌ Error:', error);
-                alert('❌ Error: ' + error.message);
+                console.error('❌ Error al guardar post:', error);
+                alert('❌ Error al crear la publicación: ' + error.message);
+                
+                // Limpiar multimedia si falló
+                if (uploadedMedia) {
+                    console.log('🧹 Limpiando multimedia por error...');
+                    await window.firebaseStorageManager.deletePostMedia(uploadedMedia);
+                }
             }
         });
 
         // Delete post
         async function deletePost(postId) {
             if (confirm('¿Estás seguro de eliminar esta publicación?')) {
-                // Eliminar de Firebase
-            await FirebaseIntegration.delete('posts', postId);
-            appData.posts = appData.posts.filter(p => p.id !== postId);
-                saveData();
-                loadPosts();
+                try {
+                    // Buscar el post
+                    const post = appData.posts.find(p => p.id === postId);
+                    
+                    // Eliminar multimedia de Storage si existe
+                    if (post && post.media) {
+                        console.log('🗑️ Eliminando multimedia del post...');
+                        await window.firebaseStorageManager.deletePostMedia(post.media);
+                    }
+                    
+                    // Eliminar de Firebase
+                    await FirebaseIntegration.delete('posts', postId);
+                    
+                    // Eliminar de array local
+                    appData.posts = appData.posts.filter(p => p.id !== postId);
+                    
+                    saveData();
+                    loadPosts();
+                    
+                    alert('✅ Publicación eliminada exitosamente');
+                } catch (error) {
+                    console.error('❌ Error eliminando post:', error);
+                    alert('❌ Error al eliminar: ' + error.message);
+                }
             }
         }
 
